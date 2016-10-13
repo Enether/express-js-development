@@ -1,0 +1,10 @@
+{
+  "name": "firstmongodemo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "2.2.10",
+    "mongoose": "4.6.3"
+  }
+}
