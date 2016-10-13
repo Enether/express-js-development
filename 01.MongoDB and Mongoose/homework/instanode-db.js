@@ -1,7 +1,11 @@
 let mongoose = require('mongoose')
 mongoose.Promise = global.Promise
 let _ = require('lodash')
+
 let imageSchema = require('./create-image')
+
+let MIN_DATE = new Date(-8640000000000000)
+let MAX_DATE = new Date(8640000000000000)
 
 function saveImage (imageInfo) {
   // save an image to the DB
@@ -31,8 +35,34 @@ function findByTag (tag, callback) {
   })
 }
 
-function saveTag (tagInfo) {
-  console.log('well what the fuck')
+function filter (options, callback) {
+  /*
+  @param @options - {after: minDate, before: maxDate, results: 24}
+  This function filters through the images and returns images that are in between the dates and returns no more than
+  results count images.
+
+  If results is empty - return a max of 10 images
+  If the after date is empty - return images only before the before date
+  Same if the before date is empty - return images only after the after date
+   */
+  let maxImageCount = options.results || 10
+
+  if (!options.after) {
+    options.after = MIN_DATE
+  }
+  if (!options.before) {
+    options.before = MAX_DATE
+  }
+
+  imageSchema
+    .where('creationDate').lte(options.before)
+    .where('creationDate').gte(options.after)
+    .limit(maxImageCount)
+    .exec(callback)
 }
 
-module.exports = {saveImage: saveImage, saveTag: saveTag, findByTag: findByTag}
+function saveTag (tagInfo) {
+  console.log('Do not see a reaosn to implement it. Also how would I implement tags that have image objects in them, which image objects SHOULD have tag objects in them which have image objects in them which have tag objects in...')
+}
+
+module.exports = {saveImage: saveImage, saveTag: saveTag, findByTag: findByTag, filter: filter}
