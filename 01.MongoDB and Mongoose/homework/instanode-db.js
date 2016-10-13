@@ -11,7 +11,6 @@ function saveImage (imageInfo) {
     description: imageInfo.description,
     tags: imageInfo.tags
   }).save()
-  imageSchema.findByT
 }
 
 function findByTag (tag, callback) {
@@ -28,7 +27,7 @@ function findByTag (tag, callback) {
       }
     }
 
-    callback(imagesWithTag)  // return the images
+    callback(_.sortBy(imagesWithTag, [function (i) { return i.creationDate }]).reverse())  // return the images ordered by their descending dates
   })
 }
 
