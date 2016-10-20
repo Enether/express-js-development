@@ -28,7 +28,7 @@ mongoose
     })
 
     app.post('/addCar', (req, res) => {
-      require('./add-car')(req.body)
+      require('./add-car')(req)
     })
 
     app.listen(1337)

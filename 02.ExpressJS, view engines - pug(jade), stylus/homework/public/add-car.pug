@@ -2,7 +2,7 @@ html
     head
         title Submit cars to the server
     body
-        form(method="post", action="/addCar")
+        form(method="post", action="/addCar", enctype="multipart/form-data")
             | Make
             input(type="text", name="make")
             br
@@ -11,6 +11,9 @@ html
             br
             | Year
             input(type="text", name="year")
+            br
+            | Car Image
+            input(type="file", name="displayImage")
             br
             button(type="submit", value="Submit", text="Submit",
                    style='background-color: #4CAF50; border: none; color: white; padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;')
