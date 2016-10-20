@@ -7,6 +7,8 @@ let connection = 'mongodb://localhost:27017/cars-db'
 mongoose.Promise = global.Promise
 let path = require('path')
 
+let addCar = require('./add-car')
+
 mongoose
   .connect(connection)
   .then(() => {
@@ -28,7 +30,8 @@ mongoose
     })
 
     app.post('/addCar', (req, res) => {
-      require('./add-car')(req)
+      addCar(req)
+      res.redirect('/')
     })
 
     app.listen(1337)
