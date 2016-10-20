@@ -4,6 +4,7 @@ let mongoose = require('mongoose')
 let carSchema = new mongoose.Schema({
   make: String,
   model: String,
+  owner: String,
   year: Number,
   imagePath: String
 })

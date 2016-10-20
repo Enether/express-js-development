@@ -47,7 +47,7 @@ function saveImage (firstName, lastName, images) {
     // /owners/Stanislav Kozlovski/1.jpg to => /Stanislav Kozlovski/1.jpg
     let ownerImagePath = '/' + fullName + '/' + imageIndex + '.jpg'
     // save the image
-    copyFile(images['displayImage'][0].path, ownerImagePath, () => { console.log('User uploaded a car image!') })
+    copyFile(images['displayImage'][0].path, ownerImagePath, () => { console.log("User uploaded an owner's image!") })
 
     return ownerImagePath
   }
@@ -65,6 +65,7 @@ function addOwner (req) {
     ownerSchema({
       firstName: ownerFirstName,
       lastName: ownerLastName,
+      fullName: ownerFirstName + ' ' + ownerLastName,
       cars: [],
       imagePath: ownerImagePath
     }).save()

@@ -27,7 +27,17 @@ mongoose
     })
 
     app.get('/addCar', (req, res) => {
-      res.render('add-car.pug')
+      let ownerSchema = require('./create-owner')
+      ownerSchema
+        .find()
+        .where('cars')
+        .equals([])  // show owners who do not have cars
+        .exec((err, owners) => {
+          if (err) console.log(err)
+
+          // when the query is done, render the HTML
+          res.render('add-car.pug', { savedOwners: owners })
+        })
     })
 
     app.get('/addOwner', (req, res) => {

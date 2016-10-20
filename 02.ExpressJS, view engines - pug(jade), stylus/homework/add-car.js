@@ -65,10 +65,28 @@ function addCar (req) {
     let carModel = fields.model
     let carYear = parseInt(fields.year || 1)
     let carImagePath = saveImage(carMake, carModel, files)  // save the image of the car and get it's path'
+    let carOwner = fields.carOwner[0]  // always the first element of the array, we cannot have more or less than 1 owner.
+
+    // add the car to the owner's db record
+    let ownerSchema = require('./create-owner')
+    ownerSchema
+      .find()
+      .where('fullName')
+      .equals(carOwner)
+      .exec((err, owners) => {
+        if (err) console.log(err)
+
+        // add the car to the owner
+        let owner = owners[0]
+        owner.cars = [{carDisplayName: carYear + ' ' + carMake + ' ' + carModel,
+                       carImagePath: carImagePath}]
+        owner.save()
+      })
 
     carSchema({
       make: carMake,
       model: carModel,
+      owner: carOwner,
       year: carYear,
       imagePath: carImagePath
     }).save()
