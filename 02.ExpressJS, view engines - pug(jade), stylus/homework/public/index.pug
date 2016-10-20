@@ -1,0 +1,41 @@
+html
+    head
+        title Cars and Coffee
+        link(href='public/index.css', rel='stylesheet')
+        style.
+             ul {
+                list-style-type: none;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+
+            li {
+                float: left;
+            }
+
+            li a {
+                display: block;
+                background-color: #f1f1f1;
+                display: block;
+                color: #000;
+                padding: 8px 16px;
+                text-decoration: none;
+            }
+
+            /* Change the link color on hover */
+            li a:hover {
+                background-color: #555;
+                color: white;
+            }
+
+    body
+        ul
+            li
+                a(href='/addCar') Add a Car
+            li
+                a(href='/gallery') Gallery
+            li
+                a(href='/meets') Meets
+            li
+                a(href='/schedule') Schedule
