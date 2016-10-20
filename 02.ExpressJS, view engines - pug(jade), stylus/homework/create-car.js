@@ -1,4 +1,4 @@
-/* this module creates the schema for an image */
+/* this module creates the schema for a car */
 let mongoose = require('mongoose')
 
 let carSchema = new mongoose.Schema({

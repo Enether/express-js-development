@@ -8,6 +8,7 @@ mongoose.Promise = global.Promise
 let path = require('path')
 
 let addCar = require('./add-car')
+let addOwner = require('./add-owner')
 
 mongoose
   .connect(connection)
@@ -17,7 +18,6 @@ mongoose
     app.set('views', path.join(__dirname, '/public'))
     app.use(bodyParser.urlencoded({ extended: true }))  // we want to parse data from forms
 
-    // used below code to render html files
     app.engine('pug', pug.renderFile)
     app.use(express.static('public'))
     app.use(express.static('cars'))
@@ -28,6 +28,10 @@ mongoose
 
     app.get('/addCar', (req, res) => {
       res.render('add-car.pug')
+    })
+
+    app.get('/addOwner', (req, res) => {
+      res.render('add-owner.pug')
     })
 
     app.get('/gallery', (req, res) => {
@@ -45,6 +49,10 @@ mongoose
     })
     app.post('/addCar', (req, res) => {
       addCar(req)
+      res.redirect('/')
+    })
+    app.post('/addOwner', (req, res) => {
+      addOwner(req)
       res.redirect('/')
     })
 

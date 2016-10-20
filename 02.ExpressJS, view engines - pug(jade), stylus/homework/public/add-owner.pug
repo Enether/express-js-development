@@ -1,0 +1,17 @@
+html
+    head
+        title Add an owner to the server
+    body
+        form(method="post", action="/addOwner", enctype="multipart/form-data")
+            | First Name:
+            input(type="text", name="firstName")
+            br
+            | Last Name:
+            input(type="text", name="lastName")
+            br
+            | Owner Picture
+            input(type="file", name="displayImage")
+            br
+            button(type="submit", value="Submit", text="Submit",
+                   style='background-color: #4CAF50; border: none; color: white; padding: 15px 32px;text-align: center;text-decoration: none;display: inline-block;font-size: 16px;')
+                                    
