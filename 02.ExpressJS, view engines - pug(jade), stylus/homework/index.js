@@ -20,6 +20,7 @@ mongoose
     // used below code to render html files
     app.engine('pug', pug.renderFile)
     app.use(express.static('public'))
+    app.use(express.static('cars'))
 
     app.get('/', (req, res) => {
       res.render('index.pug')
@@ -29,6 +30,19 @@ mongoose
       res.render('add-car.pug')
     })
 
+    app.get('/gallery', (req, res) => {
+      let carSchema = require('./create-car')
+      carSchema
+        .find()
+        .where('imagePath')
+        .ne('None')
+        .exec((err, cars) => {
+          if (err) console.log(err)
+          // when the query is done, render the HTML
+          console.log(cars)
+          res.render('car-gallery.pug', {savedCars: cars})
+        })
+    })
     app.post('/addCar', (req, res) => {
       addCar(req)
       res.redirect('/')

@@ -46,7 +46,9 @@ function saveImage (make, model, images) {
 
     let files = fs.readdirSync(carModelDirectory + '/')
     let imageIndex = (files.Length || 0) + 1
-    let carImagePath = carModelDirectory + '/' + imageIndex + '.jpg'
+    // due to us having a static file handler at the cars folder, save the url as
+    // /cars/Ford/Mustang/1.jpg to => /Ford/Mustang/1.jpg
+    let carImagePath = '/' + make + '/' + model + '/' + imageIndex + '.jpg'
     // save the image
     copyFile(images['displayImage'][0].path, carImagePath, () => { console.log('User uploaded a car image!') })
 
@@ -62,7 +64,7 @@ function addCar (req) {
     let carMake = fields.make
     let carModel = fields.model
     let carYear = parseInt(fields.year || 1)
-    let carImagePath = saveImage(carMake, carModel, files)  // save the image of the car and get it's path
+    let carImagePath = saveImage(carMake, carModel, files)  // save the image of the car and get it's path'
 
     carSchema({
       make: carMake,

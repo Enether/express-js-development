@@ -1,0 +1,29 @@
+html
+    head
+        title Cars
+        style.
+            div.img {
+                margin: 5px;
+                border: 1px solid #ccc;
+                float: left;
+                width: 180px;
+            }
+
+            div.img:hover {
+                border: 1px solid #777;
+            }
+
+            div.img img {
+                width: 100%;
+                height: auto;
+            }
+
+            div.desc {
+                padding: 15px;
+                text-align: center;
+            }
+    body
+        each car in savedCars
+            div.img
+                img(src=car.imagePath, width=500, height=500)
+                div.desc #{car.year} #{car.make} #{car.model}
