@@ -3,8 +3,9 @@ mongoose.Promise = global.Promise
 
 let Cat = mongoose.model('Cat', {
   name: {
-    firstName: {type: String, required: true}},
-    lastName : {type: String, required: true},
+    firstName: {type: String, required: true},
+    lastName: {type: String, required: true}
+  },
   age: Number
 })
 
@@ -40,8 +41,8 @@ mongoose
 
     new Cat({
       name: {
-      firstName: 'ivan',
-      lastName: 'Shopa'  
+        firstName: 'ivan',
+        lastName: 'Shopa'
       },
       age: 5
     })
@@ -56,9 +57,9 @@ mongoose
     Cat.find({'name.lastName': 'Shopa'})
 
     let cat_2 = Cat2({
-      name: "te",
+      name: 'te',
       lastName: 'te',
-      age:5
+      age: 5
     })
     cat_2.sayHello()
 
@@ -67,38 +68,39 @@ mongoose
     console.log(cat_2.introduction)
 
     // read cats
-    Cat2.find({name: /a//*regex */}).then(console.log)
-    Cat2.find({age: { $gt: 3}}).then(console.log)  // cat's with age greater than 3
+    Cat2.find({name: /a//* regex */}).then(console.log)
+    Cat2.find({age: {$gt: 3}}).then(console.log)  // cat's with age greater than 3
     // $lt less than
-    
+
     Cat2.findById('yadayada')
 
     // update cats
     Cat2.find().exec().then(cat => {
       cat.name = 'E'
-  cat.save()})
+      cat.save()
+    })
 
-  Cat2.findByIdAndUpdate('yada', {
-    $set: {age: 38, name: '34'}
-  })
+    Cat2.findByIdAndUpdate('yada', {
+      $set: {age: 38, name: '34'}
+    })
 
-  Cat2.update(
-    { name: 'Kittens'},  // where name == Kittens
-    {$set: {name: 'NoMoreKittens'}}
+    Cat2.update(
+      {name: 'Kittens'},  // where name == Kittens
+      {$set: {name: 'NoMoreKittens'}}
   )
   .then(console.log)
 
 
-  Cat2.find()
+    Cat2.find()
   .where('name').equals('Te')
   .then(console.log)
 
-  let page = 1
-  let pageSize = 20
-  Cat2
+    let page = 1
+    let pageSize = 20
+    Cat2
   .find()
   .where('age').gt(5)
-  .skip((page-1) * pageSize)
+  .skip((page - 1) * pageSize)
   .limit(3)  // don't take more than 3'
   .sort('-age')  // age descending
   .select('name age')  // take the name and age only
