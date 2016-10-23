@@ -1,9 +1,12 @@
-/* this module adds an owner to the database */
+/* this module adds an owner to the database, resizing his image to the appropriate dimensions */
 let mutliparty = require('multiparty')
 let fs = require('fs')
 let gm = require('gm')  // used to resize images
 let form = new mutliparty.Form()
 let ownerSchema = require('./create-owner')
+let IMAGE_WIDTH = '702'
+let IMAGE_HEIGHT = '936'
+
 
 function copyFile (source, target, cb) {
   // copy the file from the source directory to the target directory
@@ -14,9 +17,9 @@ function copyFile (source, target, cb) {
   writeStream.on('error', (err) => {
     done(err)
   })
-  // get the source image and change it's dimensions to 702width 936height
+  // get the source image and change it's dimensions to the desired dimensions
   gm(source)
-  .resize('702', '936', '!')  // forse a resize to the specified dimensions
+  .resize(IMAGE_WIDTH, IMAGE_HEIGHT, '!')  // forse a resize to the specified dimensions
   .stream()
   .pipe(writeStream)
 
@@ -28,35 +31,31 @@ function copyFile (source, target, cb) {
   }
 }
 
-function saveImage (firstName, lastName, images) {
-  if (images['displayImage'][0].originalFilename) {  // if the user has uploaded an image
-    // images should be saved in the following model
-    // /owners/{Owner Name}/{some index}.jpg
-    let fullName = firstName + ' ' + lastName
-    let ownerDirectory = './owners/' + firstName + ' ' + lastName
+function saveImage (firstName, lastName, image) {
+  // images should be saved in the following model
+  // /owners/{Owner Name}/{some index}.jpg
+  let fullName = firstName + ' ' + lastName
+  let ownerDirectory = './owners/' + firstName + ' ' + lastName
 
-    if (!fs.existsSync(ownerDirectory)) {
-      fs.mkdirSync(ownerDirectory)
-    }
-
-    let files = fs.readdirSync(ownerDirectory + '/')
-    let imageIndex = (files.Length || 0) + 1
-    // due to us having a static file handler at the owners folder, save the url as
-    // /owners/Stanislav Kozlovski/1.jpg to => /Stanislav Kozlovski/1.jpg
-    let ownerImagePath = '/' + fullName + '/' + imageIndex + '.jpg'
-    let ownerDestinationImagePath = './owners' + ownerImagePath
-    // save the image
-    copyFile(images['displayImage'][0].path, ownerDestinationImagePath, (err) => {
-      if (err) {
-        console.log(err)
-      } else {
-        console.log('Owner image saved successfully to ' + '.' + ownerDestinationImagePath)
-      } })
-
-    return ownerImagePath
+  if (!fs.existsSync(ownerDirectory)) {
+    fs.mkdirSync(ownerDirectory)
   }
 
-  return 'None'  // if we don't have an image
+  let files = fs.readdirSync(ownerDirectory + '/')
+  let imageIndex = (files.Length || 0) + 1
+  // due to us having a static file handler at the owners folder, save the url as
+  // /owners/Stanislav Kozlovski/1.jpg to => /Stanislav Kozlovski/1.jpg
+  let ownerImagePath = '/' + fullName + '/' + imageIndex + '.jpg'
+  let ownerDestinationImagePath = './owners' + ownerImagePath
+  // save the image
+  copyFile(image.path, ownerDestinationImagePath, (err) => {
+    if (err) {
+      console.log(err)
+    } else {
+      console.log('Owner image saved successfully to ' + ownerDestinationImagePath)
+    } })
+
+  return ownerImagePath
 }
 
 function addOwner (req) {
@@ -64,13 +63,14 @@ function addOwner (req) {
     if (error) console.log(error)
     let ownerFirstName = fields.firstName
     let ownerLastName = fields.lastName
-    let ownerImagePath = saveImage(ownerFirstName, ownerLastName, files)  // save the image of the car and get it's path'
+    let ownerImageObj = files['personImage'][0]
+    let ownerImagePath = saveImage(ownerFirstName, ownerLastName, ownerImageObj)  // save the image of the car and get it's path'
 
     ownerSchema({
       firstName: ownerFirstName,
       lastName: ownerLastName,
       fullName: ownerFirstName + ' ' + ownerLastName,
-      cars: [],
+      car: {},
       imagePath: ownerImagePath
     }).save()
   })

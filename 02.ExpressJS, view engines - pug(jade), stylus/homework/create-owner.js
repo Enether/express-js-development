@@ -6,7 +6,8 @@ let ownerSchema = new mongoose.Schema({
   lastName: {type: String, required: true},
   fullName: {type: String, required: true},
   imagePath: {type: String, requiredD: true},
-  cars: Array
-})
+  car: Object
+},
+{ minimize: false })  // we want to be able to save empty objects
 let Owner = mongoose.model('Owner', ownerSchema)
 module.exports = Owner

@@ -4,18 +4,18 @@ html
     body
         form(method="post", action="/addCar", enctype="multipart/form-data")
             | Make
-            input(type="text", name="make")
+            input(type="text", name="make" required)
             br
             | Model
-            input(type="text", name="model")
+            input(type="text", name="model" required)
             br
             | Year
-            input(type="text", name="year")
+            input(type="text", name="year" required)
             br
             | Car Image
-            input(type="file", name="displayImage")
+            input(type="file", name="carImage" required)
             br
-            select(name="carOwner")
+            select(name="carOwner" required)
                 each person in carlessPeople
                     option(value=person.fullName) #{person.fullName}
             button(type="submit", value="Submit", text="Submit",

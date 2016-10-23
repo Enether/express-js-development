@@ -20,14 +20,15 @@ mongoose
 
     // favicon middleware
     app.use(favicon(path.join(__dirname, '/public/favicon.ico')))
+
     app.set('port', process.env.PORT || 3000)
     app.set('views', path.join(__dirname, '/public'))
     app.use(bodyParser.urlencoded({ extended: true }))  // we want to parse data from forms
-
     app.engine('pug', pug.renderFile)
     app.use(express.static('public'))
     app.use(express.static('cars'))
     app.use(express.static('owners'))
+    app.use(require('stylus').middleware(path.join(__dirname, '/public')))
 
     // homepage
     app.get('/', (req, res) => {
@@ -40,7 +41,7 @@ mongoose
       ownerSchema
         .find()
         .where('cars')
-        .ne([])
+        .ne({})
         .exec((err, savedOwners) => {
           if (err) console.log(err)
           res.render('owners-list.pug', {owners: savedOwners})
@@ -51,8 +52,8 @@ mongoose
     app.get('/addCar', (req, res) => {
       ownerSchema
         .find()
-        .where('cars')
-        .equals([])  // show owners who do not have cars linked to them
+        .where('car')
+        .equals({})  // show owners who do not have a car linked to them
         .exec((err, owners) => {
           if (err) console.log(err)
 
