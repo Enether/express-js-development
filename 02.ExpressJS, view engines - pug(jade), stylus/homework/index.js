@@ -3,6 +3,7 @@ let app = express()
 let pug = require('pug')
 let bodyParser = require('body-parser')
 let mongoose = require('mongoose')
+let favicon = require('serve-favicon')
 let connection = 'mongodb://localhost:27017/cars-db'
 mongoose.Promise = global.Promise
 let path = require('path')
@@ -16,6 +17,9 @@ mongoose
   .connect(connection)
   .then(() => {
     console.log('Mongoose up and running!')
+
+    // favicon middleware
+    app.use(favicon(path.join(__dirname, '/public/favicon.ico')))
     app.set('port', process.env.PORT || 3000)
     app.set('views', path.join(__dirname, '/public'))
     app.use(bodyParser.urlencoded({ extended: true }))  // we want to parse data from forms
