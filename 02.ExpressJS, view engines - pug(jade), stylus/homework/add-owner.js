@@ -1,25 +1,24 @@
 /* this module adds an owner to the database */
 let mutliparty = require('multiparty')
 let fs = require('fs')
+let gm = require('gm')  // used to resize images
 let form = new mutliparty.Form()
 let ownerSchema = require('./create-owner')
 
 function copyFile (source, target, cb) {
   // copy the file from the source directory to the target directory
-  // in the callback, print out an error
+  // in the callback, print out an error if there is any
   var cbCalled = false
-
-  var readStream = fs.createReadStream(source)
-  readStream.on('error', (err) => {
-    done(err)
-  })
 
   var writeStream = fs.createWriteStream(target)
   writeStream.on('error', (err) => {
     done(err)
   })
-
-  readStream.pipe(writeStream)  // read the file and send it to our target destination
+  // get the source image and change it's dimensions to 702width 936height
+  gm(source)
+  .resize('702', '936', '!')  // forse a resize to the specified dimensions
+  .stream()
+  .pipe(writeStream)
 
   function done (err) {
     if (!cbCalled) {
@@ -30,8 +29,7 @@ function copyFile (source, target, cb) {
 }
 
 function saveImage (firstName, lastName, images) {
-  if (images['displayImage'][0].originalFilename) {
-    // if the user has uploaded an image
+  if (images['displayImage'][0].originalFilename) {  // if the user has uploaded an image
     // images should be saved in the following model
     // /owners/{Owner Name}/{some index}.jpg
     let fullName = firstName + ' ' + lastName
@@ -46,8 +44,14 @@ function saveImage (firstName, lastName, images) {
     // due to us having a static file handler at the owners folder, save the url as
     // /owners/Stanislav Kozlovski/1.jpg to => /Stanislav Kozlovski/1.jpg
     let ownerImagePath = '/' + fullName + '/' + imageIndex + '.jpg'
+    let ownerDestinationImagePath = './owners' + ownerImagePath
     // save the image
-    copyFile(images['displayImage'][0].path, ownerImagePath, () => { console.log("User uploaded an owner's image!") })
+    copyFile(images['displayImage'][0].path, ownerDestinationImagePath, (err) => {
+      if (err) {
+        console.log(err)
+      } else {
+        console.log('Owner image saved successfully to ' + '.' + ownerDestinationImagePath)
+      } })
 
     return ownerImagePath
   }

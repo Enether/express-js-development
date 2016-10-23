@@ -1,0 +1,16 @@
+html
+    title Car Owners
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    link(rel="stylesheet" href="http://www.w3schools.com/lib/w3.css")
+
+    body
+        div(class="w3-container")
+            h2 Car Owners
+            each owner in owners
+                div(class="w3-container w3-center")
+                    h3 #{owner.fullName}
+                    img(src=owner.imagePath alt="Avatar" style="width: 300px; height: 150px;")
+                    h5 #{owner.cars[0].make}
+
+                    div(class="w3-section")
+                        a(class="w3-btn w3-green" href="/owners/" +  owner.fullName) See Profile

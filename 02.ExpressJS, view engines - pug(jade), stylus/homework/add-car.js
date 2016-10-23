@@ -50,7 +50,7 @@ function saveImage (make, model, images) {
     // /cars/Ford/Mustang/1.jpg to => /Ford/Mustang/1.jpg
     let carImagePath = '/' + make + '/' + model + '/' + imageIndex + '.jpg'
     // save the image
-    copyFile(images['displayImage'][0].path, carImagePath, () => { console.log('User uploaded a car image!') })
+    copyFile(images['displayImage'][0].path, './cars' + carImagePath, () => { console.log('User uploaded a car image!') })
 
     return carImagePath
   }
