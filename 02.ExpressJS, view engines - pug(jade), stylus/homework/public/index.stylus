@@ -18,3 +18,15 @@ li a
 li a:hover
     background-color: #555
     color: white
+
+#instructions
+    background-color #FFFFFF
+    color #000000
+    border 6px solid #6D6D6D
+    font-family helvetica
+    font-weight normal
+    font-size 22px
+    font-variant small-caps
+    text-align left
+    text-shadow 4px 4px 10px #3A6180
+    box-shadow 5px 4px 5px #3A6180

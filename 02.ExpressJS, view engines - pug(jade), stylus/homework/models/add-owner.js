@@ -35,7 +35,7 @@ function saveImage (firstName, lastName, image) {
   // images should be saved in the following model
   // /owners/{Owner Name}/{some index}.jpg
   let fullName = firstName + ' ' + lastName
-  let ownerDirectory = './owners/' + firstName + ' ' + lastName
+  let ownerDirectory = './public/owners/' + firstName + ' ' + lastName
 
   if (!fs.existsSync(ownerDirectory)) {
     fs.mkdirSync(ownerDirectory)
@@ -46,7 +46,7 @@ function saveImage (firstName, lastName, image) {
   // due to us having a static file handler at the owners folder, save the url as
   // /owners/Stanislav Kozlovski/1.jpg to => /Stanislav Kozlovski/1.jpg
   let ownerImagePath = '/' + fullName + '/' + imageIndex + '.jpg'
-  let ownerDestinationImagePath = './owners' + ownerImagePath
+  let ownerDestinationImagePath = './public/owners' + ownerImagePath
   // save the image
   copyFile(image.path, ownerDestinationImagePath, (err) => {
     if (err) {

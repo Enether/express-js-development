@@ -8,10 +8,10 @@ let connection = 'mongodb://localhost:27017/cars-db'
 mongoose.Promise = global.Promise
 let path = require('path')
 
-let addCar = require('./add-car')
-let addOwner = require('./add-owner')
-let ownerSchema = require('./create-owner')
-let carSchema = require('./create-car')
+let addCar = require('./models/add-car')
+let addOwner = require('./models/add-owner')
+let ownerSchema = require('./models/create-owner')
+let carSchema = require('./models/create-car')
 
 mongoose
   .connect(connection)
@@ -22,12 +22,12 @@ mongoose
     app.use(favicon(path.join(__dirname, '/public/favicon.ico')))
 
     app.set('port', process.env.PORT || 3000)
-    app.set('views', path.join(__dirname, '/public'))
+    app.set('views', path.join(__dirname, '/views'))
     app.use(bodyParser.urlencoded({ extended: true }))  // we want to parse data from forms
     app.engine('pug', pug.renderFile)
     app.use(express.static('public'))
-    app.use(express.static('cars'))
-    app.use(express.static('owners'))
+    app.use(express.static('public/cars'))
+    app.use(express.static('public/owners'))
     app.use(require('stylus').middleware(path.join(__dirname, '/public')))
 
     // homepage

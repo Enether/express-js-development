@@ -2,6 +2,7 @@ html
     head
         title Cars and Coffee
         link(href='/index.css', rel='stylesheet')
+        link(href='/favicon.ico?v2', rel='icon')
 
 
     body
@@ -14,7 +15,12 @@ html
                 a(href='/addOwner') Add an Owner
             li
                 a(href='/owners/') Owners
-            li
-                a(href='/meets') Meets
-            li
-                a(href='/schedule') Schedule
+
+        div(id="instructions")
+            | 1. Add an Owner
+            br
+            | 2. Add a Car to said owner
+            br
+            | 3. Repeat
+            br
+            | 4. Bask in the glory of the gallery and owners list (and profiles too)

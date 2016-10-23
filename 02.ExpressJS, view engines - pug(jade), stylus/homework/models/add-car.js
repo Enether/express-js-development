@@ -34,7 +34,7 @@ function saveImage (make, model, image) {
   // if the user has uploaded an image
   // images should be saved in the following model
   // /cars/{car make}/{car model}/{some index}.jpg
-  let carMakeDirectory = './cars/' + make
+  let carMakeDirectory = './public/cars/' + make
   let carModelDirectory = carMakeDirectory + '/' + model
 
   if (!fs.existsSync(carMakeDirectory)) {
@@ -49,7 +49,7 @@ function saveImage (make, model, image) {
   // due to us having a static file handler at the cars folder, save the url as
   // /cars/Ford/Mustang/1.jpg to => /Ford/Mustang/1.jpg
   let carImagePath = '/' + make + '/' + model + '/' + imageIndex + '.jpg'
-  let carDestinationImagePath = './cars' + carImagePath
+  let carDestinationImagePath = './public/cars' + carImagePath
   // save the image
   copyFile(image.path, carDestinationImagePath, (err) => {
     if (err) {
