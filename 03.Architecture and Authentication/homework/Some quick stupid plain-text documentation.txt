@@ -1,0 +1,56 @@
+The bulk of the project is in the server folder, separated into other important folders.
+
+server
+-------config
+	-> Holds middleware files, our MODELS folder, i'm guessing
+		config.js - returns an object, holding information like rootPath, dbConnectionPath and the sessionSecretKey(for cookies)
+			    this is used to have different values for development and production
+		----------------------------------------------------------------------------------------------------------------------------------
+		auth.js - middleware for authenticating a user, returns an object with function isAuthenticated(checking the isAuthenticated function attached to the REQ from passport)
+		----------------------------------------------------------------------------------------------------------------------------------
+		database.js - connects to the database and sets mongoose's global promise
+		!!! Calls data/user.js to load the User model into the DB
+		----------------------------------------------------------------------------------------------------------------------------------
+		express.js - sets all things express, view engine to pug, the views folder, middlewares and a middleware to attach the user to the HTTP response in order to show him (when logged in, for ex) in the HTML
+		----------------------------------------------------------------------------------------------------------------------------------
+		passsport.js - configures the passport module, making him take the username and password from the req.body, how to seach for a user in the DB (by something unique, hsi ID in this case)
+		----------------------------------------------------------------------------------------------------------------------------------
+		router.js - routes all the URLs to their respective controllers
+		----------------------------------------------------------------------------------------------------------------------------------
+
+-------controllers
+	-> Holds our controllers, meaning our functions that react to the appropriate request
+		index.js - links all the controllers together and returns an object. Key: the controller's name. ex: home, Value: the object homeController returns, which is an object with key: function name(the URL) and value - the function itself. ex: index: (req,res => {res.render('home/index')
+		----------------------------------------------------------------------------------------------------------------------------------
+		article-controller.js - controller for all things article, not yet implemented. Plan to have showing the articles page, creating an article, deleting ETC
+		----------------------------------------------------------------------------------------------------------------------------------
+		home-controller.js - Controller for the home page. Currently only displays the index.html and about.html pages
+		----------------------------------------------------------------------------------------------------------------------------------
+		users-controller.js - controller for all things user-related. 
+			Has multiple functions.
+			register - function displaying the register.html page
+			create - function validating and adding a user to the DB
+			login - function displaying the login.html page
+			authenticate - function that validates the user and logs him in if the credentials are OK
+			logout - function that calls passport's req.logout() function and redirects to the homepage
+
+--------data
+	-> Holds MongoDB models
+		user.js - creates the User schema for the DB, adds his authenticate method, which essentially checks his hashedpassword with the one given, also has
+		returns this one seedAminUser function that creates an admin user with pre-defined values if the DB is empty
+-------utilities
+	-> miscellanceous utilities
+		encryption.js - uses the crypto module and returns two functions, related to password generation. generateSalt and generateHashedPassword
+-------views
+	-> holds our html (in reality - .pug) pages
+	----------shared
+			layout.pug - our menu bar, a layout page which each other page extends and uses. Has a check for a globalError,
+			which displays a certain message if the error is sent.
+	----------home
+			index.pug - our home page
+			about.pug - our about page
+	----------users
+			login.pug - the page for logging in
+			register.pug - the page for registering a user. Can have a USER object sent to him, to show his values in the 
+			input fields, in case the user tries to register but has some invalid info to not have everything he's typed disappear
+
