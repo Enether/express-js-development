@@ -1,0 +1,26 @@
+extends ../shared/layout
+
+block main-content
+  h1 Create new user
+  form(method="post" action="/registerUser")
+    label(for="username") Username
+    br
+    input(type="text" name="username" id="username" value=username placeholder="Your username")
+    br
+    label(for="password") Password
+    br
+    input(type="password" name="password" id="password" value=password placeholder="Your password")
+    br
+    label(for="confirm-password") Confirm Password
+    br
+    input(type="password" name="confirmPassword" id="confirm-password" placeholder="Your password (again ]:)")
+    br
+    label(for="first-name") First Name
+    br
+    input(type="text" name="firstName" id="first-name" value=firstName placeholder="Your first name")
+    br
+    label(for="last-name") Last Name
+    br
+    input(type="text" name="lastName" id="last-name" value=lastName placeholder="Your last name")
+    br
+    input(type="submit" value="Register")

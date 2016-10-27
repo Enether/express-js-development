@@ -1,0 +1,31 @@
+h1 {
+  color: blue
+}
+.container {
+  padding: 25%
+}
+.menu {
+  list-style-type: none;
+  padding-left: 0;
+}
+.menu li {
+  display: inline-block
+}
+.menu li:after {
+  content: "\00a0";
+}
+.delimiter {
+  margin-right: 25px;
+}
+.global-error {
+  font-size: 100px;
+  color: red;
+}
+
+#logout-form {
+  display: inline-block;
+}
+
+#logout-button {
+  display: inline-block;
+}

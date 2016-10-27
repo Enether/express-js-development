@@ -1,0 +1,27 @@
+html
+  head
+    title Blog System
+    link(href="css/site.css" rel="stylesheet")
+  body
+    .container
+      ul.menu
+        li
+          a(href="/") Home
+        li
+          a(href="/about") About
+        li.delimiter
+        if (currentUser)
+          li
+            span= currentUser.username
+          li
+            form#logout-form(method="post" action="/logout")
+              input#logout-button(type="submit" value="Logout")              
+        else
+          li
+            a(href="/registerUser") Register
+          li
+            a(href="/login") Log In
+      if (globalError)
+        div.global-error= globalError
+
+      block main-content
