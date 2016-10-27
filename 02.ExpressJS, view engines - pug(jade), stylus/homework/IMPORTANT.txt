@@ -1,0 +1,3 @@
+Because this homework uses the GraphicsMagick module to resize the owner's profile picture on download, 
+you will need to install the GraphicsMagick processing system to have the module work.
+http://www.graphicsmagick.org/

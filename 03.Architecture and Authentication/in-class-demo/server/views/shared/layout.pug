@@ -1,0 +1,28 @@
+doctype
+html
+    head
+        title Hello!
+        link(href="/css/site.css" rel="stylesheet")
+    body
+        .container
+            ul.menu
+                li
+                    a(href="/") Home
+                li
+                    a(href="/about") About
+                li.delimiter
+                if (curentUser)
+                    li
+                        span=currentUser.username
+                    li
+                        form#logout-form(method="post" action="/users/logout")
+                            a(href="javascript:document.getElementById('logout-form').submit()") Logouts
+                else
+                    li
+                        a(href="/users/register") Register
+                    li
+                        a(href="/users/login") Login
+
+            if (globalError)
+                div.global-error=globalError
+    block main-content
