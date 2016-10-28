@@ -88,7 +88,12 @@ module.exports = {
           res.render('home/index', {globalError: 'No such article with title ' + articleTitle + ' exists.'})
         } else {
           // render edit page
-          res.render('articles/edit-article', article)
+          if (String(article.author.id).valueOf() !== String(requestUserID).valueOf()) {
+            // the user that wants to edit the article is not the author
+            res.render('home/index')
+          } else {
+            res.render('articles/edit-article', article)
+          }
         }
       })
   },
