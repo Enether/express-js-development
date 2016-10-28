@@ -7,7 +7,7 @@ let articleSchema = mongoose.Schema({
   // receive an author as an object, holding the author's full name and his ID in the database
   author: {
     type: Object,
-    required: requiredValidationMessage,
+    required: requiredValidationMessage
   },
 
   title: {
@@ -23,4 +23,4 @@ let articleSchema = mongoose.Schema({
 })
 
 
-let Article = mongoose.model('Article', articleSchema)
+mongoose.model('Article', articleSchema)

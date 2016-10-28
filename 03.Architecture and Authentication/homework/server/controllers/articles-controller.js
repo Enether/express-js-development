@@ -1,7 +1,7 @@
 let Article = require('mongoose').model('Article')
 
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
+function isNumeric (n) {
+  return !isNaN(parseFloat(n)) && isFinite(n)
 }
 
 
@@ -23,7 +23,7 @@ module.exports = {
     Article
       .find({'title': article.title})
       .then((articles) => {
-        // make sure such an article does not exist        
+        // make sure such an article does not exist
         if (articles.length !== 0) {
           // such an article exists
           article.globalError = 'There already is an article with the title ' + article.title
@@ -49,8 +49,9 @@ module.exports = {
     let articlesPerPage = 5
 
     let requestUserID = undefined  // the DB ID of the user viewing the articles   
-    if (req.user)
+    if (req.user) {
       requestUserID = req.user._id
+    }
 
     // show the page that lists all the articles
     Article
@@ -59,7 +60,7 @@ module.exports = {
       .skip(articlesPerPage * page)
       .limit(articlesPerPage)
       .then((articles) => {
-        if (articles.length == 0) {
+        if (articles.length === 0 && page !== 0) {
           // reset to the first page if we can't list anything on the requested page
           res.redirect('articles?page=0')
         } else {
