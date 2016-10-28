@@ -30,7 +30,7 @@ module.exports = {
             .create(article)
             .then(() => {
               console.log('Saved article ' + article.title + ' successfully!')
-              // TODO: Redirect to list of articles
+              res.redirect('/articles')
             })
           }
       })
