@@ -51,3 +51,41 @@ label {
   font-weight: bold;
   font-size: 15px;
 }
+
+.articleContents {
+  min-width: 50px;
+  min-height: 130px;
+  font-family: Arial, Helvetica, sans-serif;
+  border: 2px solid cornflowerblue;
+}
+
+.author {
+  font-weight: bold;
+  margin-top: 50px;
+  font-size: 20px;
+  font-style: blue;
+  text-align: right;
+}
+
+ul.pagination {
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+ul.pagination li {display: inline;}
+
+ul.pagination li a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    background-color: cornflowerblue;
+    border: 1px solid #ddd;
+    border-radius: 15px;
+    font-size: 18px;
+}
+ul.pagination li a:hover {
+    background-color: lightblue;
+}

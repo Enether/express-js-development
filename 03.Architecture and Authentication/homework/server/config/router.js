@@ -23,6 +23,10 @@ module.exports = (app) => {
   app.post('/articles/addArticle', /* auth.isAuthenticated, */ controllers.articles.create)
   app.get('/articles/create', auth.isInRole('Admin'), controllers.articles.create)
 
+  app.get('/articles', (req, res) => {
+    controllers.articles.list(req, res, req.query.page)
+  })
+
   /*
   app.all('/:controller/:method/:id', (req, res) => {
     controllers[req.params.controller].req.params.method(id)

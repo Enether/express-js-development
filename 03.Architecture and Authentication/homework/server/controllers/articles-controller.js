@@ -1,7 +1,7 @@
 let Article = require('mongoose').model('Article')
 
 module.exports = {
-  // display the page letting the user add an artidle
+  // display the page letting the user add an article
   add: (req, res) => {
     res.render('articles/add-article')
   },
@@ -33,6 +33,33 @@ module.exports = {
               // TODO: Redirect to list of articles
             })
           }
+      })
+  },
+
+  list: (req, res, page) => {
+    page = page || 0
+    page = parseInt(page)
+    let nextPageQueryString = '?page=' + (page+1)
+    let prevPageQueryString =  page !== 0 ? '?page=' + (page-1) : undefined
+    let articlesPerPage = 5
+
+    // show the page that lists all the articles
+    Article
+      .find({})
+      .sort('-_id')  // to sort them in newest-oldest
+      .skip(articlesPerPage * page)
+      .limit(articlesPerPage)
+      .then((articles) => {
+        if (articles.length == 0) {
+          // reset to the first page if we can't list anything on the requested page
+          res.redirect('articles?page=0')
+        } else {
+          res.render('articles/list-articles', {
+            articles: articles,
+            prevPageQueryString: prevPageQueryString,
+            nextPageQueryString: nextPageQueryString
+          })
+        }
       })
   }
 }

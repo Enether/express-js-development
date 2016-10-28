@@ -1,0 +1,14 @@
+extends ../shared/layout
+
+block main-content
+    each article in articles
+        div.article
+            h1 #{article.title}
+            p.articleContents #{article.contents}
+            p.author -#{article.author.fullName}
+    ul.pagination
+        - if (prevPageQueryString !== undefined)
+            li
+              a(href=prevPageQueryString) Previous Page
+        li
+          a(href=nextPageQueryString) Next Page

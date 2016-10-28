@@ -1,5 +1,6 @@
 // moduel that creates the Article model in modelDB
 const mongoose = require('mongoose')
+
 const requiredValidationMessage = '{PATH} is required'
 
 let articleSchema = mongoose.Schema({
@@ -20,5 +21,6 @@ let articleSchema = mongoose.Schema({
     required: requiredValidationMessage
   }
 })
+
 
 let Article = mongoose.model('Article', articleSchema)
