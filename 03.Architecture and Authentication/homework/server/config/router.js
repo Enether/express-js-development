@@ -17,15 +17,12 @@ module.exports = (app) => {
 
   app.post('/logout', controllers.users.logout)
 
+  // Creating an article
+  app.get('/articles/add', auth.isAuthenticated, controllers.articles.add)
+  app.post('/articles/addArticle', auth.isAuthenticated, controllers.articles.create)
 
-  app.get('/articles/add', /*auth.isAuthenticated, */controllers.articles.add)
-  //                          middleware to check if the user is an admin
-  app.post('/articles/addArticle', /* auth.isAuthenticated, */ controllers.articles.create)
-  app.get('/articles/create', auth.isInRole('Admin'), controllers.articles.create)
-
-  app.get('/articles', (req, res) => {
-    controllers.articles.list(req, res, req.query.page)
-  })
+  // List of articles
+  app.get('/articles', controllers.articles.list)
 
   /*
   app.all('/:controller/:method/:id', (req, res) => {

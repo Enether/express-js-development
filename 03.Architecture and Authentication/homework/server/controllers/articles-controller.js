@@ -1,5 +1,10 @@
 let Article = require('mongoose').model('Article')
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+
 module.exports = {
   // display the page letting the user add an article
   add: (req, res) => {
@@ -36,9 +41,9 @@ module.exports = {
       })
   },
 
-  list: (req, res, page) => {
-    page = page || 0
-    page = parseInt(page)
+  list: (req, res) => {
+    // the page we're currently on and the query strings for the pagination
+    let page = isNumeric(req.query.page) ? parseInt(req.query.page) : 0
     let nextPageQueryString = '?page=' + (page+1)
     let prevPageQueryString =  page !== 0 ? '?page=' + (page-1) : undefined
     let articlesPerPage = 5
