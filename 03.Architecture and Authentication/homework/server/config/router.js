@@ -17,7 +17,10 @@ module.exports = (app) => {
 
   app.post('/logout', controllers.users.logout)
 
+
+  app.get('/articles/add', /*auth.isAuthenticated, */controllers.articles.add)
   //                          middleware to check if the user is an admin
+  app.post('/articles/addArticle', /* auth.isAuthenticated, */ controllers.articles.create)
   app.get('/articles/create', auth.isInRole('Admin'), controllers.articles.create)
 
   /*

@@ -5,7 +5,7 @@ module.exports = {
       // TODO: Append the URL the user wanted to visit to the URL, then
       // parse it from the querystring to load up the page he tried to visit
       // before logging in
-      res.redirect('login')
+      res.redirect('/login')
       return
     }
 

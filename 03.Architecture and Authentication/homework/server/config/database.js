@@ -14,4 +14,5 @@ module.exports = (config) => {
   db.on('error', (err) => { console.log('Database error: ' + err) })
 
   require('../data/user').seedAdminUser()  // seed an admin user AND most importatly load the User schema
+  require('../data/article')
 }

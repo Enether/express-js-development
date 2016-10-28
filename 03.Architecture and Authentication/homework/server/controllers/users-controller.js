@@ -21,7 +21,6 @@ module.exports = {
       res.render('users/register', user)
       return
     } else {
-      let User = require('mongoose').model('User')
       // check same username
       User
         .find({'username': user.username})
