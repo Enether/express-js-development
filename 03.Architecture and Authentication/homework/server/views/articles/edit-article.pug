@@ -1,0 +1,14 @@
+extends ../shared/layout
+
+block main-content
+  form(method="post" action="editArticle")
+    label(for="title") Article title
+    br
+    input.articleTitle(type="text" name="title" id="articleTitle" maxlength="60" value=title required)
+    br
+    label(for="contents") Article's contents
+    br
+    textarea.articleBody(type="text" name="contents" id="articleBody" maxlength="4000" required) #{contents}
+    br
+    input.oldTitle(type="text" name="oldTitle" value=title hidden)
+    input(type="submit" value="Edit Blog Post")

@@ -24,6 +24,10 @@ module.exports = (app) => {
   // List of articles
   app.get('/articles', controllers.articles.list)
 
+
+  // Edit article page
+  app.get('/articles/edit/:articleTitle', auth.isAuthenticated, controllers.articles.editPage)
+  app.post('/articles/edit/editArticle', auth.isAuthenticated, controllers.articles.editArticle)
   /*
   app.all('/:controller/:method/:id', (req, res) => {
     controllers[req.params.controller].req.params.method(id)

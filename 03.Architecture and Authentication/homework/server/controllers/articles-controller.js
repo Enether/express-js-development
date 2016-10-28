@@ -37,15 +37,15 @@ module.exports = {
               console.log('Saved article ' + article.title + ' successfully!')
               res.redirect('/articles')
             })
-          }
+        }
       })
   },
 
   list: (req, res) => {
     // the page we're currently on and the query strings for the pagination
     let page = isNumeric(req.query.page) ? parseInt(req.query.page) : 0
-    let nextPageQueryString = '?page=' + (page+1)
-    let prevPageQueryString =  page !== 0 ? '?page=' + (page-1) : undefined
+    let nextPageQueryString = '?page=' + (page + 1)
+    let prevPageQueryString = page !== 0 ? '?page=' + (page - 1) : undefined
     let articlesPerPage = 5
 
     let requestUserID = undefined  // the DB ID of the user viewing the articles   
@@ -70,6 +70,58 @@ module.exports = {
             nextPageQueryString: nextPageQueryString,
             viewerID: requestUserID  // to check if he can edit the article
           })
+        }
+      })
+  },
+  // display edit page
+  editPage: (req, res) => {
+    let articleTitle = req.params.articleTitle
+    let requestUserID = undefined  // the DB ID of the user viewing the articles   
+    if (req.user) {
+      requestUserID = req.user._id
+    }
+
+    Article
+      .findOne({title: articleTitle})
+      .then((article) => {
+        if (!article) {
+          res.render('home/index', {globalError: 'No such article with title ' + articleTitle + ' exists.'})
+        } else {
+          // render edit page
+          res.render('articles/edit-article', article)
+        }
+      })
+  },
+  // edit the article in the DB
+  editArticle: (req, res) => {
+    let oldTitle = req.body.oldTitle
+    let newTitle = req.body.title
+    let newContent = req.body.contents
+
+    Article
+      .findOne({title: oldTitle})
+      .then((article) => {
+        if (!article) {
+          res.render('home/index', {globalError: 'No such article with title "' + oldTitle + '" exists.'})
+        } else {
+          // check if new title exists
+          Article
+            .findOne({title: newTitle})
+            .then((potentialArticle) => {
+              if (potentialArticle) {
+                // article with new title already exists
+                res.render('articles/edit-article', {
+                  globalError: 'An article with the title "' + newTitle + '" exists.',
+                  title: article.title,
+                  contents: article.contents
+                })
+              } else {
+                article.title = newTitle
+                article.contents = newContent
+                article.save()
+                res.render('articles/list-articles')
+              }
+            })
         }
       })
   }
