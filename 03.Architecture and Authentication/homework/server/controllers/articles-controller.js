@@ -48,6 +48,10 @@ module.exports = {
     let prevPageQueryString =  page !== 0 ? '?page=' + (page-1) : undefined
     let articlesPerPage = 5
 
+    let requestUserID = undefined  // the DB ID of the user viewing the articles   
+    if (req.user)
+      requestUserID = req.user._id
+
     // show the page that lists all the articles
     Article
       .find({})
@@ -62,7 +66,8 @@ module.exports = {
           res.render('articles/list-articles', {
             articles: articles,
             prevPageQueryString: prevPageQueryString,
-            nextPageQueryString: nextPageQueryString
+            nextPageQueryString: nextPageQueryString,
+            viewerID: requestUserID  // to check if he can edit the article
           })
         }
       })

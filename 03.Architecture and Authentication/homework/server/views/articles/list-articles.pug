@@ -6,6 +6,9 @@ block main-content
             h1 #{article.title}
             p.articleContents #{article.contents}
             p.author -#{article.author.fullName}
+            - if (String(article.author.id).valueOf() === String(viewerID).valueOf())
+                - let editLink = "edit/" + article.title
+                a.editButton(href=editLink) Edit
     ul.pagination
         - if (prevPageQueryString !== undefined)
             li
