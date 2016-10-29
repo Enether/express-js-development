@@ -124,7 +124,7 @@ module.exports = {
                 article.title = newTitle
                 article.contents = newContent
                 article.save()
-                res.render('articles/list-articles')
+                res.redirect('/articles')
               }
             })
         }
