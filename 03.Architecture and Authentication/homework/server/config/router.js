@@ -31,6 +31,11 @@ module.exports = (app) => {
 
   // Article details page
   app.get('/articles/details/:articleTitle', auth.isAuthenticated, controllers.articles.detailsPage)
+
+  // Delete article request
+  app.post('/articles/delete/:articleTitle', auth.isInRole('Admin'), controllers.articles.deleteArticle)
+
+  
   /*
   app.all('/:controller/:method/:id', (req, res) => {
     controllers[req.params.controller].req.params.method(id)

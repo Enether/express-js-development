@@ -6,7 +6,10 @@ block main-content
   p.author -#{article.author.fullName}
   - if (viewerIsAdmin)
     - let editLink = "/articles/edit/" + article.title
+    - let deleteLink = "/articles/delete/" + article.title
     a.adminArticleButton(href=editLink) Edit
+    form(method="post" action=deleteLink)
+      input.adminArticleButton(type="submit" value="Delete Post")
   - else if (String(article.author.id).valueOf() === String(viewerID).valueOf())
     - let editLink = "/articles/edit/" + article.title
     a.articleButton(href=editLink) Edit

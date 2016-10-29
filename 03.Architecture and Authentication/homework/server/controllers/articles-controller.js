@@ -160,5 +160,31 @@ module.exports = {
           res.render('articles/article-details', {article: article, viewerID: requestUserID, viewerIsAdmin: requestUserIsAdmin})
         }
       })
+  },
+
+  // delete an article
+  deleteArticle: (req, res) => {
+    let articleTitle = req.params.articleTitle
+
+    Article
+      .findOne({title: articleTitle})
+      .then((article) => {
+        if (!article) {
+          res.render('articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})          
+        } else {
+          if (req.user) {
+            requestUserID = req.user._id
+            if (req.user.roles.indexOf('Admin') !== -1) {
+              requestUserIsAdmin = true
+            }
+          }
+          
+          if (requestUserIsAdmin) {
+            // delete the article
+            article.remove()
+            res.redirect('/articles')
+          }
+        }
+      })
   }
 }
