@@ -35,6 +35,9 @@ module.exports = (app) => {
   // Delete article request
   app.post('/articles/delete/:articleTitle', auth.isInRole('Admin'), controllers.articles.deleteArticle)
 
+  // Add coment to an article
+  app.post('/articles/details/:articleTitle/addArticleComment', auth.isAuthenticated, controllers.articles.addComment)
+
   
   /*
   app.all('/:controller/:method/:id', (req, res) => {

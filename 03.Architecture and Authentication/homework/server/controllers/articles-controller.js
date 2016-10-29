@@ -1,5 +1,6 @@
 let Article = require('mongoose').model('Article')
 
+
 function isNumeric (n) {
   return !isNaN(parseFloat(n)) && isFinite(n)
 }
@@ -153,11 +154,12 @@ module.exports = {
           let requestUserIsAdmin = false
           if (req.user) {
             requestUserID = req.user._id
+            requestUserUsername = req.user.username
             if (req.user.roles.indexOf('Admin') !== -1) {
               requestUserIsAdmin = true
             }
           }
-          res.render('articles/article-details', {article: article, viewerID: requestUserID, viewerIsAdmin: requestUserIsAdmin})
+          res.render('articles/article-details', {article: article, viewerID: requestUserID, viewerIsAdmin: requestUserIsAdmin, viewerUsername: requestUserUsername})
         }
       })
   },
@@ -183,6 +185,36 @@ module.exports = {
             // delete the article
             article.remove()
             res.redirect('/articles')
+          }
+        }
+      })
+  },
+
+  // add a comment to the article
+  addComment: (req, res) => {
+    let articleTitle = req.params.articleTitle
+
+    Article
+      .findOne({title: articleTitle})
+      .then((article) => {
+        if (!article) {
+          // no such article exists
+          res.render('/articles/list-articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})          
+        } else {
+          if (!req.user) {
+            // user is not logged in
+           res.render('articles/list-articles', {globalError: 'You need to be logged in to add a comment!'})          
+          } else {
+            let comment = req.body
+            console.log(comment)
+            article.comments.push(comment)
+            console.log(article)
+            article
+              .save()
+              .then(() => {
+                console.log('Added article comment ' + comment)
+                res.redirect('/articles/details/' + articleTitle)
+            })
           }
         }
       })

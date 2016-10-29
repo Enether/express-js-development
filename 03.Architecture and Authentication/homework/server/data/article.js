@@ -1,4 +1,4 @@
-// moduel that creates the Article model in modelDB
+// module that creates the Article model in mongoDB
 const mongoose = require('mongoose')
 
 const requiredValidationMessage = '{PATH} is required'
@@ -19,7 +19,21 @@ let articleSchema = mongoose.Schema({
   contents: {
     type: String,
     required: requiredValidationMessage
-  }
+  },
+  // Comments array of comment objects
+  comments: [{
+    author: {
+      type: String,
+      requried: requiredValidationMessage
+    },
+
+    contents: {
+      type: String,
+      required: requiredValidationMessage
+    }
+  }]
+
+
 })
 
 

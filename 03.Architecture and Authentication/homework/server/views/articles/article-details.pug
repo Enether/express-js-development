@@ -13,3 +13,17 @@ block main-content
   - else if (String(article.author.id).valueOf() === String(viewerID).valueOf())
     - let editLink = "/articles/edit/" + article.title
     a.articleButton(href=editLink) Edit
+  each comment in article.comments
+    article.comment
+      div.comment-body
+        div.text
+          p #{comment.contents}
+        p.attribution #{comment.author}
+
+  - if(viewerID)
+    // Comments
+    - let addCommentLink = "/articles/details/" + article.title + "/addArticleComment"
+    form(method="post" action=addCommentLink)
+      input(type="text" name="author" value=viewerUsername hidden)
+      textarea.commentBody(name="contents" id="articleBody" maxlength="1000" placeholder="Your comment" required)
+      input.articleButton(type="submit" value="Add Comment")
