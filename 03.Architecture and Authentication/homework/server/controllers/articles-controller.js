@@ -129,5 +129,26 @@ module.exports = {
             })
         }
       })
+  },
+
+  // article details page
+  detailsPage: (req, res) => {
+    let articleTitle = req.params.articleTitle
+
+    Article
+      .findOne({title: articleTitle})
+      .then((article) => {
+        if (!article) {
+          // article with the requested title does not exist
+          res.render('articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})
+        } else {
+          // show details page
+          let requestUserID = undefined  // the DB ID of the user viewing the articles   
+          if (req.user) {
+            requestUserID = req.user._id
+          }
+          res.render('articles/article-details', {article: article, viewerID: requestUserID})
+        }
+      })
   }
 }
