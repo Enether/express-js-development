@@ -6,9 +6,13 @@ block main-content
             h1 #{article.title}
             p.articleContents #{article.contents}
             p.author -#{article.author.fullName}
-            - if (String(article.author.id).valueOf() === String(viewerID).valueOf())
+            - if (viewerIsAdmin)
+                - let editLink = "articles/edit/" + article.title
+                a.adminArticleButton(href=editLink) Edit
+            - else if (String(article.author.id).valueOf() === String(viewerID).valueOf())
                 - let editLink = "articles/edit/" + article.title
                 a.articleButton(href=editLink) Edit
+
             - let seeMoreButton = "articles/details/" + article.title
             a.articleButton(href=seeMoreButton) See More
     ul.pagination

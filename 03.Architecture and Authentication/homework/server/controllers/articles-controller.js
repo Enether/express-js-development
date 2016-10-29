@@ -48,9 +48,13 @@ module.exports = {
     let prevPageQueryString = page !== 0 ? '?page=' + (page - 1) : undefined
     let articlesPerPage = 5
 
-    let requestUserID = undefined  // the DB ID of the user viewing the articles   
+    let requestUserID = undefined  // the DB ID of the user viewing the articles
+    let requestUserIsAdmin = false
     if (req.user) {
       requestUserID = req.user._id
+      if (req.user.roles.indexOf('Admin') !== -1) {
+        requestUserIsAdmin = true
+      }
     }
 
     // show the page that lists all the articles
@@ -68,7 +72,8 @@ module.exports = {
             articles: articles,
             prevPageQueryString: prevPageQueryString,
             nextPageQueryString: nextPageQueryString,
-            viewerID: requestUserID  // to check if he can edit the article
+            viewerID: requestUserID,  // to check if he can edit the article
+            viewerIsAdmin: requestUserIsAdmin  // for exclusive CRUD rights
           })
         }
       })
@@ -88,7 +93,8 @@ module.exports = {
           res.render('home/index', {globalError: 'No such article with title ' + articleTitle + ' exists.'})
         } else {
           // render edit page
-          if (String(article.author.id).valueOf() !== String(requestUserID).valueOf()) {
+          if (req.user.roles.indexOf('Admin') === -1 && // if the user is not an admin
+              String(article.author.id).valueOf() !== String(requestUserID).valueOf()) {  // and is not the creator of the article
             // the user that wants to edit the article is not the author
             res.render('home/index')
           } else {
@@ -143,11 +149,15 @@ module.exports = {
           res.render('articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})
         } else {
           // show details page
-          let requestUserID = undefined  // the DB ID of the user viewing the articles   
+          let requestUserID = undefined  // the DB ID of the user viewing the articles
+          let requestUserIsAdmin = false
           if (req.user) {
             requestUserID = req.user._id
+            if (req.user.roles.indexOf('Admin') !== -1) {
+              requestUserIsAdmin = true
+            }
           }
-          res.render('articles/article-details', {article: article, viewerID: requestUserID})
+          res.render('articles/article-details', {article: article, viewerID: requestUserID, viewerIsAdmin: requestUserIsAdmin})
         }
       })
   }
