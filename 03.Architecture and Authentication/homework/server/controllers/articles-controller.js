@@ -1,3 +1,8 @@
+const multiparty = require('multiparty')
+
+let form = new multiparty.Form()
+
+let saveImage = require('../utilities/save-image')
 let Article = require('mongoose').model('Article')
 
 
@@ -14,14 +19,19 @@ module.exports = {
 
   // add the article to the DB
   create: (req, res) => {
-    let article = req.body
-    let author = {
-      id: req.user._id,
-      fullName: req.user.firstName + ' ' + req.user.lastName
-    }
-    article.author = author
+    form.parse(req, (err, fields, files) => {
+      let author = {
+        id: req.user._id,
+        fullName: req.user.firstName + ' ' + req.user.lastName
+      } 
 
-    Article
+      let article = {
+        author: author,
+        title: fields.title[0],
+        contents: fields.contents[0]
+      }
+
+       Article
       .find({'title': article.title})
       .then((articles) => {
         // make sure such an article does not exist
@@ -31,6 +41,15 @@ module.exports = {
           res.render('articles/add-article', article)
           return
         } else {
+          // try to save the picture only when we're sure we're creating the article
+          let imgPath = ''
+          let articlePicture = files.articlePicture[0]
+          if (articlePicture.originalFilename) {
+            // a picture has been uploaded
+            imgPath = saveImage(article.title, articlePicture.path, articlePicture.originalFilename)
+          }
+          article.imgPath = imgPath
+
           // create the article
           Article
             .create(article)
@@ -40,6 +59,8 @@ module.exports = {
             })
         }
       })
+    })
+   
   },
 
   list: (req, res) => {

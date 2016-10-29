@@ -20,6 +20,9 @@ let articleSchema = mongoose.Schema({
     type: String,
     required: requiredValidationMessage
   },
+  // Path to the Article's picture, if one exists
+  imgPath: { type: String },
+
   // Comments array of comment objects
   comments: [{
     author: {
@@ -32,8 +35,6 @@ let articleSchema = mongoose.Schema({
       required: requiredValidationMessage
     }
   }]
-
-
 })
 
 

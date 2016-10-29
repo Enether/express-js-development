@@ -4,6 +4,8 @@ block main-content
     each article in articles
         div.article
             h1 #{article.title}
+            - if (article.imgPath)
+                img(src=article.imgPath style="width:600px;height:304px;")               
             p.articleContents #{article.contents}
             p.author -#{article.author.fullName}
             - if (viewerIsAdmin)
