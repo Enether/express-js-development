@@ -5,13 +5,13 @@ block main-content
   p.articleContents #{article.contents}
   p.author -#{article.author.fullName}
   - if (viewerIsAdmin)
-    - let editLink = "/articles/edit/" + article.title
-    - let deleteLink = "/articles/delete/" + article.title
+    - let editLink = "/articles/edit/" + escape(article.title)
+    - let deleteLink = "/articles/delete/" + escape(article.title)
     a.adminArticleButton(href=editLink) Edit
     form(method="post" action=deleteLink)
       input.adminArticleButton(type="submit" value="Delete Post")
   - else if (String(article.author.id).valueOf() === String(viewerID).valueOf())
-    - let editLink = "/articles/edit/" + article.title
+    - let editLink = "/articles/edit/" + escape(article.title)
     a.articleButton(href=editLink) Edit
   each comment in article.comments
     article.comment
@@ -22,7 +22,7 @@ block main-content
 
   - if(viewerID)
     // Comments
-    - let addCommentLink = "/articles/details/" + article.title + "/addArticleComment"
+    - let addCommentLink = "/articles/details/" + escape(article.title) + "/addArticleComment"
     form(method="post" action=addCommentLink)
       input(type="text" name="author" value=viewerUsername hidden)
       textarea.commentBody(name="contents" id="articleBody" maxlength="1000" placeholder="Your comment" required)

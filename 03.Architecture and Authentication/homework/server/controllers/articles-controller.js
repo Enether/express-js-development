@@ -147,7 +147,7 @@ module.exports = {
       .then((article) => {
         if (!article) {
           // article with the requested title does not exist
-          res.render('articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})
+          res.render('articles/list-articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})
         } else {
           // show details page
           let requestUserID = undefined  // the DB ID of the user viewing the articles
@@ -212,8 +212,7 @@ module.exports = {
             article
               .save()
               .then(() => {
-                console.log('Added article comment ' + comment)
-                res.redirect('/articles/details/' + articleTitle)
+                res.redirect('/articles/details/' + escape(articleTitle))
             })
           }
         }
