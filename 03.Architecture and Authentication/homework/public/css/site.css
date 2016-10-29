@@ -98,3 +98,9 @@ ul.pagination li a:hover {
     text-decoration: none;
     color: initial;
 }
+
+.adminLabel {
+  color: red;
+  border: 1px solid red;
+  border-radius: 15px;
+}
