@@ -113,8 +113,8 @@ module.exports = {
           Article
             .findOne({title: newTitle})
             .then((potentialArticle) => {
-              if (potentialArticle) {
-                // article with new title already exists
+              if (potentialArticle && potentialArticle.title !== oldTitle) {
+                // article with new title already exists and it's not the old one
                 res.render('articles/edit-article', {
                   globalError: 'An article with the title "' + newTitle + '" exists.',
                   title: article.title,
