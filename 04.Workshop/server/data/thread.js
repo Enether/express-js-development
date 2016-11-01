@@ -14,6 +14,11 @@ let threadSchema = mongoose.Schema({
   content: {
     type: String,
     required: true
+  },
+
+  id: {
+    type: Number,
+    required: true
   }
 })
 
