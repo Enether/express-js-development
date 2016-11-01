@@ -1,4 +1,10 @@
+const multiparty = require('multiparty')
+
+let form = new multiparty.Form()
+
+let saveImage = require('../utilities/save-image')
 let Article = require('mongoose').model('Article')
+
 
 function isNumeric (n) {
   return !isNaN(parseFloat(n)) && isFinite(n)
@@ -13,14 +19,19 @@ module.exports = {
 
   // add the article to the DB
   create: (req, res) => {
-    let article = req.body
-    let author = {
-      id: req.user._id,
-      fullName: req.user.firstName + ' ' + req.user.lastName
-    }
-    article.author = author
+    form.parse(req, (err, fields, files) => {
+      let author = {
+        id: req.user._id,
+        fullName: req.user.firstName + ' ' + req.user.lastName
+      } 
 
-    Article
+      let article = {
+        author: author,
+        title: fields.title[0],
+        contents: fields.contents[0]
+      }
+
+       Article
       .find({'title': article.title})
       .then((articles) => {
         // make sure such an article does not exist
@@ -30,6 +41,15 @@ module.exports = {
           res.render('articles/add-article', article)
           return
         } else {
+          // try to save the picture only when we're sure we're creating the article
+          let imgPath = ''
+          let articlePicture = files.articlePicture[0]
+          if (articlePicture.originalFilename) {
+            // a picture has been uploaded
+            imgPath = saveImage(article.title, articlePicture.path, articlePicture.originalFilename)
+          }
+          article.imgPath = imgPath
+
           // create the article
           Article
             .create(article)
@@ -39,6 +59,8 @@ module.exports = {
             })
         }
       })
+    })
+   
   },
 
   list: (req, res) => {
@@ -48,9 +70,13 @@ module.exports = {
     let prevPageQueryString = page !== 0 ? '?page=' + (page - 1) : undefined
     let articlesPerPage = 5
 
-    let requestUserID = undefined  // the DB ID of the user viewing the articles   
+    let requestUserID = undefined  // the DB ID of the user viewing the articles
+    let requestUserIsAdmin = false
     if (req.user) {
       requestUserID = req.user._id
+      if (req.user.roles.indexOf('Admin') !== -1) {
+        requestUserIsAdmin = true
+      }
     }
 
     // show the page that lists all the articles
@@ -68,7 +94,8 @@ module.exports = {
             articles: articles,
             prevPageQueryString: prevPageQueryString,
             nextPageQueryString: nextPageQueryString,
-            viewerID: requestUserID  // to check if he can edit the article
+            viewerID: requestUserID,  // to check if he can edit the article
+            viewerIsAdmin: requestUserIsAdmin  // for exclusive CRUD rights
           })
         }
       })
@@ -88,7 +115,8 @@ module.exports = {
           res.render('home/index', {globalError: 'No such article with title ' + articleTitle + ' exists.'})
         } else {
           // render edit page
-          if (String(article.author.id).valueOf() !== String(requestUserID).valueOf()) {
+          if (req.user.roles.indexOf('Admin') === -1 && // if the user is not an admin
+              String(article.author.id).valueOf() !== String(requestUserID).valueOf()) {  // and is not the creator of the article
             // the user that wants to edit the article is not the author
             res.render('home/index')
           } else {
@@ -113,8 +141,8 @@ module.exports = {
           Article
             .findOne({title: newTitle})
             .then((potentialArticle) => {
-              if (potentialArticle) {
-                // article with new title already exists
+              if (potentialArticle && potentialArticle.title !== oldTitle) {
+                // article with new title already exists and it's not the old one
                 res.render('articles/edit-article', {
                   globalError: 'An article with the title "' + newTitle + '" exists.',
                   title: article.title,
@@ -124,9 +152,90 @@ module.exports = {
                 article.title = newTitle
                 article.contents = newContent
                 article.save()
-                res.render('articles/list-articles')
+                res.redirect('/articles')
               }
             })
+        }
+      })
+  },
+
+  // article details page
+  detailsPage: (req, res) => {
+    let articleTitle = req.params.articleTitle
+
+    Article
+      .findOne({title: articleTitle})
+      .then((article) => {
+        if (!article) {
+          // article with the requested title does not exist
+          res.render('articles/list-articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})
+        } else {
+          // show details page
+          let requestUserID = undefined  // the DB ID of the user viewing the articles
+          let requestUserIsAdmin = false
+          if (req.user) {
+            requestUserID = req.user._id
+            requestUserUsername = req.user.username
+            if (req.user.roles.indexOf('Admin') !== -1) {
+              requestUserIsAdmin = true
+            }
+          }
+          res.render('articles/article-details', {article: article, viewerID: requestUserID, viewerIsAdmin: requestUserIsAdmin, viewerUsername: requestUserUsername})
+        }
+      })
+  },
+
+  // delete an article
+  deleteArticle: (req, res) => {
+    let articleTitle = req.params.articleTitle
+
+    Article
+      .findOne({title: articleTitle})
+      .then((article) => {
+        if (!article) {
+          res.render('articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})          
+        } else {
+          if (req.user) {
+            requestUserID = req.user._id
+            if (req.user.roles.indexOf('Admin') !== -1) {
+              requestUserIsAdmin = true
+            }
+          }
+          
+          if (requestUserIsAdmin) {
+            // delete the article
+            article.remove()
+            res.redirect('/articles')
+          }
+        }
+      })
+  },
+
+  // add a comment to the article
+  addComment: (req, res) => {
+    let articleTitle = req.params.articleTitle
+
+    Article
+      .findOne({title: articleTitle})
+      .then((article) => {
+        if (!article) {
+          // no such article exists
+          res.render('/articles/list-articles', {globalError: 'An article with the title "' + articleTitle + '" does not exist!'})          
+        } else {
+          if (!req.user) {
+            // user is not logged in
+           res.render('articles/list-articles', {globalError: 'You need to be logged in to add a comment!'})          
+          } else {
+            let comment = req.body
+            console.log(comment)
+            article.comments.push(comment)
+            console.log(article)
+            article
+              .save()
+              .then(() => {
+                res.redirect('/articles/details/' + escape(articleTitle))
+            })
+          }
         }
       })
   }

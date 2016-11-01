@@ -1,0 +1,29 @@
+extends ../shared/layout
+
+block main-content
+  h1 #{article.title}
+  p.articleContents #{article.contents}
+  p.author -#{article.author.fullName}
+  - if (viewerIsAdmin)
+    - let editLink = "/articles/edit/" + escape(article.title)
+    - let deleteLink = "/articles/delete/" + escape(article.title)
+    a.adminArticleButton(href=editLink) Edit
+    form(method="post" action=deleteLink)
+      input.adminArticleButton(type="submit" value="Delete Post")
+  - else if (String(article.author.id).valueOf() === String(viewerID).valueOf())
+    - let editLink = "/articles/edit/" + escape(article.title)
+    a.articleButton(href=editLink) Edit
+  each comment in article.comments
+    article.comment
+      div.comment-body
+        div.text
+          p #{comment.contents}
+        p.attribution #{comment.author}
+
+  - if(viewerID)
+    // Comments
+    - let addCommentLink = "/articles/details/" + escape(article.title) + "/addArticleComment"
+    form(method="post" action=addCommentLink)
+      input(type="text" name="author" value=viewerUsername hidden)
+      textarea.commentBody(name="contents" id="articleBody" maxlength="1000" placeholder="Your comment" required)
+      input.articleButton(type="submit" value="Add Comment")

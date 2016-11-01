@@ -1,10 +1,14 @@
 extends ../shared/layout
 
 block main-content
-  form(method="post" action="addArticle")
+  form(method="post" action="addArticle" enctype="multipart/form-data")
     label(for="title") Article Title
     br
     input.articleTitle(type="text" name="title" id="articleTitle" maxlength="60" value=title required)
+    br
+    label(for="picture") Article picture
+    br
+    input(type="file" name="articlePicture" id="articlePicture")
     br
     label(for="contents") Article's Contents
     br

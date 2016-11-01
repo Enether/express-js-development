@@ -4,11 +4,22 @@ block main-content
     each article in articles
         div.article
             h1 #{article.title}
+            - if (article.imgPath)
+                img(src=article.imgPath style="width:600px;height:304px;")               
             p.articleContents #{article.contents}
             p.author -#{article.author.fullName}
-            - if (String(article.author.id).valueOf() === String(viewerID).valueOf())
-                - let editLink = "articles/edit/" + article.title
-                a.editButton(href=editLink) Edit
+            - if (viewerIsAdmin)
+                - let editLink = "/articles/edit/" + escape(article.title)
+                - let deleteLink = "/articles/delete/" + escape(article.title)
+                a.adminArticleButton(href=editLink) Edit
+                form(method="post" action=deleteLink)
+                    input.adminArticleButton(type="submit" value="Delete Post")
+            - else if (String(article.author.id).valueOf() === String(viewerID).valueOf())
+                - let editLink = "articles/edit/" + escape(article.title)
+                a.articleButton(href=editLink) Edit
+
+            - let seeMoreButtonLink = "articles/details/" + escape(article.title)
+            a.articleButton(href=seeMoreButtonLink) See More
     ul.pagination
         - if (prevPageQueryString !== undefined)
             li

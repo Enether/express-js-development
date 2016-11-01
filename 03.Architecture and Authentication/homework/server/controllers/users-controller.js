@@ -62,7 +62,7 @@ module.exports = {
       .findOne({ username: inputUser.username })
       .then(user => {
         // try to authenticate using the userSchema method
-        if (!user.authenticate(inputUser.password)) {
+        if (!user || !user.authenticate(inputUser.password)) {
           res.render('users/login', { globalError: 'Invalid username or password' })
           return
         }
