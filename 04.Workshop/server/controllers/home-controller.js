@@ -1,7 +1,12 @@
 // this module holds the functions for the routes in the homepage
-
+let Thread = require('mongoose').model('Thread')
 module.exports = {
   index: (req, res) => {
-    res.render('home/index')
+    Thread
+      .find()
+      .limit(20)
+      .then((threads) => {
+        res.render('home/index', {threads: threads})
+      })
   }
 }
