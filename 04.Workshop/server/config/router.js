@@ -18,6 +18,10 @@ module.exports = (app) => {
   // thread create page
   app.get('/thread/create', auth.isAuthenticated, controllers.thread.showCreate)
   app.post('/thread/create', auth.isAuthenticated, controllers.thread.create)
+
+  // show thread page
+  app.get('/post/:id/:title', controllers.thread.showThread)
+
   app.all('*', (req, res) => {
     res.status(404)
     res.send('404 Not Found :@')

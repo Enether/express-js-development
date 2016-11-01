@@ -6,6 +6,20 @@ module.exports = {
     res.render('thread/register')
   },
 
+  showThread: (req, res) => {
+    let threadID = req.params.id === 'js' ? 0 : req.params.id
+    Thread
+      .findOne({'id': threadID})
+      .then((thread) => {
+        if (!thread) {
+          // ERROR
+          console.log('No thread found!')
+        } else {
+          res.render('thread/thread', {thread: thread})
+        }
+      })
+  },
+
   create: (req, res) => {
     // get the max ID and increment it on the new thread
     Thread
@@ -18,7 +32,7 @@ module.exports = {
           let incrementedID = 1
 
           if (item) {
-            incrementedID = item.id + 1
+            incrementedID = parseInt(item.id) + 1
           }
 
           let thread = req.body

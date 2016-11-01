@@ -1,0 +1,7 @@
+extends ../shared/layout
+
+block main-content
+  div(class="container")
+    h2 #{thread.title}
+    div(class="well") #{thread.content}
+    p.author(style="float:right;") --#{thread.author}
