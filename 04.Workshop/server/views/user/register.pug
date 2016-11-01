@@ -1,0 +1,29 @@
+extends ../shared/layout
+
+block main-content
+  form.form-horizontal(action='/register', method='POST')
+    fieldset
+      #legend
+        legend(style="color: red;") Register
+      .control-group
+        // Username
+        label.control-label(for='username' style="color: red;") Username
+        .controls
+          input#username.input-xlarge(type='text', name='username', placeholder='' required)
+          p.help-block Username can contain any letters or numbers, without spaces
+      .control-group
+        // Password
+        label.control-label(for='password' style="color: red;") Password
+        .controls
+          input#password.input-xlarge(type='password', name='password', placeholder='' required)
+          p.help-block Password should be at least 4 characters
+      .control-group
+        // Password
+        label.control-label(for='password_confirm' style="color: red;") Password (Confirm)
+        .controls
+          input#password_confirm.input-xlarge(type='password', name='password_confirm', placeholder='' required)
+          p.help-block Please confirm password
+      .control-group
+        // Button
+        .controls
+          button.btn.btn-success Register

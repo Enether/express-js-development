@@ -1,0 +1,21 @@
+extends ../shared/layout
+
+block main-content
+  form.form-horizontal(action='/login', method='POST')
+    fieldset
+      #legend
+        legend(style="color: green;") Login
+      .control-group
+        // Username
+        label.control-label(for='username' style="color: green;") Username
+        .controls
+          input#username.input-xlarge(type='text', name='username', placeholder='' required)
+      .control-group
+        // Password
+        label.control-label(for='password' style="color: green;") Password
+        .controls
+          input#password.input-xlarge(type='password', name='password', placeholder='' required)
+      .control-group
+        // Button
+        .controls
+          button.btn.btn-success Login
