@@ -45,6 +45,7 @@ module.exports = {
       .then((user) => {
         if (!user) {
           // invalid username
+          console.log('Invalid Username!')
         } else {
           // validate password
           let salt = user.salt
@@ -52,6 +53,7 @@ module.exports = {
 
           if (loginHashedPassword !== user.hashedPass) {
             // invalid password
+            console.log('Invalid Password!')
           } else {
             // everything is OK
             req.logIn(user, (err, user) => {
