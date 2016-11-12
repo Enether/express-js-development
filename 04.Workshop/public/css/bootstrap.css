@@ -5839,6 +5839,7 @@ button.list-group-item-danger.active:focus {
 .well-sm {
   padding: 9px;
   border-radius: 3px;
+  background-color: #e7e7e7
 }
 .close {
   float: right;
@@ -6757,3 +6758,15 @@ button.close {
   }
 }
 /*# sourceMappingURL=bootstrap.css.map */
+/*.answers:before {
+  content: '';
+  width: 0;
+  line-height: 10px;
+  position: absolute;
+  border: 1px solid black;
+  border-padding: 10;
+  left: 90px;
+}*/
+.answers {
+  border-left: 3px solid grey;
+}

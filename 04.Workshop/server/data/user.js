@@ -12,7 +12,13 @@ let userSchema = mongoose.Schema({
 
   hashedPass: String,
 
-  roles: [String]
+  roles: [String],
+
+  answers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    default: [],
+    ref: 'Answer'
+  }]
 })
 
 // add authenticate method to the DB model for easy authentication

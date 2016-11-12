@@ -5,6 +5,7 @@ module.exports = {
     Thread
       .find()
       .limit(20)
+      .populate('author')
       .then((threads) => {
         res.render('home/index', {threads: threads})
       })

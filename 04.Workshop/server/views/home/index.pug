@@ -8,5 +8,5 @@ block main-content
         a(href=threadLink class="label label-success" style="font-size: 25px;") #{thread.title}
         br
         blockquote
-          p #{thread.content}
-          footer #{thread.author}
+          p= thread.content
+          footer= thread.author.username

@@ -21,6 +21,8 @@ module.exports = (app) => {
 
   // show thread page
   app.get('/post/:id/:title', controllers.thread.showThread)
+  // add comment action
+  app.post('/comment/:id/:title', auth.isAuthenticated, controllers.thread.addComment)
 
   app.all('*', (req, res) => {
     res.status(404)

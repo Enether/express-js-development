@@ -15,5 +15,6 @@ module.exports = (config) => {
 
   require('../data/user')
   require('../data/thread')
+  require('../data/answer')
 }
 

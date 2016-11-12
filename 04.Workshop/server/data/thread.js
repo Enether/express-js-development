@@ -2,8 +2,9 @@ const mongoose = require('mongoose')
 
 let threadSchema = mongoose.Schema({
   author: {
-    type: String,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User'
   },
 
   title: {
@@ -18,8 +19,15 @@ let threadSchema = mongoose.Schema({
 
   id: {
     type: Number,
-    required: true
-  }
+    required: true,
+    unique: true
+  },
+
+  answers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    default: [],
+    ref: 'Answer'
+  }]
 })
 
 mongoose.model('Thread', threadSchema)
