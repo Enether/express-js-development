@@ -18,6 +18,7 @@ module.exports = {
     let username = req.params.username
     User
       .findOne({username: username})
+      .populate('answers')
       .then((user) => {
         if (!user) {
           // ERROR!!!
@@ -28,12 +29,7 @@ module.exports = {
         Thread
           .find({author: user._id})
           .then((threads) => {
-            // get his answers
-            Answer
-              .find({author: user._id})
-              .then((answers) => {
-                res.render('user/profile', {user: user, threads: threads, answers: answers})
-              })
+            res.render('user/profile', {user: user, threads: threads, answers: user.answers})
           })
       })
   },

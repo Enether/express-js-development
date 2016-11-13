@@ -117,6 +117,7 @@ module.exports = {
                 }
 
                 user.answers.push(answer._id)  // save the answer to the user's answers too
+                user.save()
                 res.redirect('/post/' + threadId + '/' + req.params.title)
               })
           })
