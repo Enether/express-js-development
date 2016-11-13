@@ -19,6 +19,9 @@ module.exports = (app) => {
   app.get('/thread/create', auth.isAuthenticated, controllers.thread.showCreate)
   app.post('/thread/create', auth.isAuthenticated, controllers.thread.create)
 
+  // thread list pageg
+  app.get('/thread/list', controllers.thread.showList)
+
   // show thread page
   app.get('/post/:id/:title', controllers.thread.showThread)
   // add comment action

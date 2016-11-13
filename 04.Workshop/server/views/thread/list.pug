@@ -3,9 +3,9 @@ extends ../shared/layout
 block main-content
   div.row
     for thread in threads
-      div(class="col-lg-1 col-offset-6 centered" style="margin-left: 50px; width: 300px;")  
+      div(class="col-lg-1 col-offset-6 centered" style="margin-left: 50px; width: 400px;")  
         - let threadLink = '/post/' + thread.id + '/' + thread.title
-        a(href=threadLink class="label label-success" style="font-size: 25px;")= thread.title
+        a(href=threadLink class="label label-info" style="font-size: 25px;")= thread.title
         br
         blockquote
           p= thread.content

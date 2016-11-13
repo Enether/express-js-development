@@ -31,13 +31,9 @@ html(lang='en')
         // Collect the nav links, forms, and other content for toggling
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
           ul.nav.navbar-nav
-            li
-              a(href='#') About
-            li
-              a(href='#') Services
-            li
-              a(href='#') Contact
             - if (currentUser)
+                li
+                  a(href='/thread/create') Post a new Thread
                 li
                   span= currentUser.username
                 li

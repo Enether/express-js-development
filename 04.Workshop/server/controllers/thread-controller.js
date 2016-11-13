@@ -9,6 +9,27 @@ module.exports = {
     res.render('thread/register')
   },
 
+  showList: (req, res) => {
+    // 20 threads sorted by their last answer's date
+    Thread
+      .find()
+      .populate(['answers', 'author'])
+      .then((threads) => {
+        // order by the latest answer in the thread
+        threads.sort((x, y) => {
+          if (x.answers.length === 0 || y.answers.length === 0) {
+            // if one of them does not have any answers, list the one with answers in front
+            return x.answers.length < y.answers.length
+          }
+          return x.answers[x.answers.length - 1].creationDate < y.answers[y.answers.length - 1].creationDate
+        })
+        // take the first 20
+        let orderedThreads = threads.slice(0, Math.min(threads.length, 20))
+
+        res.render('thread/list', { threads: orderedThreads })
+      })
+  },
+
   showThread: (req, res) => {
     let threadID = req.params.id === 'js' ? 0 : req.params.id
     Thread
