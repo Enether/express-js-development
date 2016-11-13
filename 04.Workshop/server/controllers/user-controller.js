@@ -1,6 +1,9 @@
 // this module holds the functions for the routes that are linked with users
-let encryption = require('../utilities/encryption')
-let User = require('mongoose').model('User')
+const encryption = require('../utilities/encryption')
+const mongoose = require('mongoose')
+const User = mongoose.model('User')
+const Thread = mongoose.model('Thread')
+const Answer = mongoose.model('Answer')
 
 module.exports = {
   showRegister: (req, res) => {
@@ -9,6 +12,30 @@ module.exports = {
 
   showLogin: (req, res) => {
     res.render('user/login')
+  },
+
+  showProfile: (req, res) => {
+    let username = req.params.username
+    User
+      .findOne({username: username})
+      .then((user) => {
+        if (!user) {
+          // ERROR!!!
+          console.log('Invalid User!')
+        }
+
+        // get his articles
+        Thread
+          .find({author: user._id})
+          .then((threads) => {
+            // get his answers
+            Answer
+              .find({author: user._id})
+              .then((answers) => {
+                res.render('user/profile', {user: user, threads: threads, answers: answers})
+              })
+          })
+      })
   },
 
   register: (req, res) => {

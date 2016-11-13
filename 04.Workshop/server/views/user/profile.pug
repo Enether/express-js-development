@@ -1,0 +1,15 @@
+extends ../shared/layout
+
+block main-content
+  h1= user.username
+
+  h2 Threads
+  for thread in threads
+    - let threadLink = '/post/' + thread.id + '/' + thread.title
+        a(href=threadLink class="label label-info" style="font-size: 25px;")= thread.title
+
+  h2 Answers
+  for answer in answers
+    div(style="border: 1px double grey")
+      div.well-sm= answer.content
+

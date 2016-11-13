@@ -14,6 +14,8 @@ module.exports = (app) => {
   app.get('/login', controllers.user.showLogin)
   // login action
   app.post('/login', controllers.user.login)
+  // user profile
+  app.get('/profile/:username', auth.isAuthenticated, controllers.user.showProfile)
 
   // thread create page
   app.get('/thread/create', auth.isAuthenticated, controllers.thread.showCreate)
