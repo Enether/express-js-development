@@ -122,5 +122,22 @@ module.exports = {
               })
           })
       })
+  },
+
+  deleteThread: (req, res) => {
+    let threadId = req.params.id
+
+    Thread
+      .findOne({id: threadId})
+      .then((thread) => {
+        if (!thread) {
+          // ERROR
+          console.log('Unsuccessful delete request. Thread with id ' + threadId + ' does not exist.')
+          return
+        }
+
+        thread.remove()
+        res.redirect('/')
+      })
   }
 }

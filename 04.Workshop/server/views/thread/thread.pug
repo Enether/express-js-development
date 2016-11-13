@@ -1,11 +1,16 @@
 extends ../shared/layout
 
 block main-content
-  - let route = '/comment/' + thread.id + '/' + thread.title
   div(class="container")
     h2= thread.title
     div(class="well")= thread.content
     p.author(style="float:right;")= thread.author.username
+    if currentUser && currentUser.isAdmin()
+      - let threadRoute = '/post/' + thread.id + '/' + thread.title
+      form(method="post", action=threadRoute)
+        button.btn-danger(type="submit") Delete
+      - let updateRoute = threadRoute + '/update'
+      a.btn-warning(href=updateRoute) Edit
     h3 Answers
     br
     .answers
@@ -13,7 +18,8 @@ block main-content
         div.well-sm= answer.content
         p.author= answer.author.username
     if currentUser
-      form(method='post' action=route id="commentForm")
+    - let commentRoute = '/comment/' + thread.id + '/' + thread.title
+      form(method='post' action=commentRoute id="commentForm")
         div.form-group
           label(for="content") Comment:
             textarea.form-control(rows="5" name="content" id="content" onkeydown = "if (event.keyCode == 13) document.getElementById('commentForm').submit();")

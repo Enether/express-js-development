@@ -3,7 +3,6 @@ const encryption = require('../utilities/encryption')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const Thread = mongoose.model('Thread')
-const Answer = mongoose.model('Answer')
 
 module.exports = {
   showRegister: (req, res) => {

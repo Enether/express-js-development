@@ -29,8 +29,12 @@ userSchema.method({
     } else {
       return false
     }
+  },
+  isAdmin: function () {
+    return this.roles.indexOf('Admin') > -1
   }
 })
+
 
 mongoose.model('User', userSchema)
 
