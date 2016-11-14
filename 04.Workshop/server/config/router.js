@@ -11,7 +11,7 @@ module.exports = (app) => {
   app.post('/register', controllers.user.register)
 
   // user login page
-  app.get('/login', controllers.user.showLogin)
+  app.get('/login', controllers.user.showLogin) 
   // login action
   app.post('/login', controllers.user.login)
   // user profile
@@ -31,11 +31,11 @@ module.exports = (app) => {
   // edit thread page
   app.get('/post/:id/:title/edit', auth.isInRole('Admin'), controllers.thread.showEditPage)
   app.post('/thread/:id/edit', auth.isInRole('Admin'), controllers.thread.editThread)
-  // add answer action
-  app.post('/answer/:id/:title', auth.isAuthenticated, controllers.thread.addAnswer)
+  
   // delete answer action
   app.post('/answer/:id/delete', auth.isInRole('Admin'), controllers.thread.deleteAnswer)
-
+  // add answer action
+  app.post('/answer/:id/:title', auth.isAuthenticated, controllers.thread.addAnswer)
   app.all('*', (req, res) => {
     res.status(404)
     res.send('404 Not Found :@')
