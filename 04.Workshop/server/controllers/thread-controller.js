@@ -122,8 +122,8 @@ module.exports = {
       })
   },
 
-  addComment: (req, res) => {
-    let threadId = req.params.id  // from the URL /comment/:id/:title
+  addAnswer: (req, res) => {
+    let threadId = req.params.id  // from the URL /answer/:id/:title
     let answer = req.body
 
     if (!req.isAuthenticated()) {
@@ -162,7 +162,7 @@ module.exports = {
                   .findById(answer.author)
                   .then((user) => {
                     if (!user) {
-                      console.log('No user when trying to add a comment, this shouldnt be happening! :O')
+                      console.log('No user when trying to add a answer, this shouldnt be happening! :O')
                       throw Error
                     }
 

@@ -22,9 +22,9 @@ block main-content
           form(method="post", action=deleteAnswerRoute)
             button.btn-danger(type="submit") Delete
     if currentUser
-    - let commentRoute = '/comment/' + thread.id + '/' + thread.title
-      form(method='post' action=commentRoute id="commentForm")
+    - let answerRoute = '/answer/' + thread.id + '/' + thread.title
+      form(method='post' action=answerRoute id="answerForm")
         div.form-group
-          label(for="content") Comment:
-            textarea.form-control(rows="5" name="content" id="content" onkeydown = "if (event.keyCode == 13) document.getElementById('commentForm').submit();")
-            input(type="submit" id="addComment" hidden)
+          label(for="content") Answer:
+            textarea.form-control(rows="5" name="content" id="content" onkeydown = "if (event.keyCode == 13) document.getElementById('answerForm').submit();")
+            input(type="submit" id="addAnswer" hidden)
