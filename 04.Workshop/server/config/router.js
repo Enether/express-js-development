@@ -33,6 +33,8 @@ module.exports = (app) => {
   app.post('/thread/:id/edit', auth.isInRole('Admin'), controllers.thread.editThread)
   // add comment action
   app.post('/comment/:id/:title', auth.isAuthenticated, controllers.thread.addComment)
+  // delete answer action
+  app.post('/answer/:id/delete', auth.isInRole('Admin'), controllers.thread.deleteAnswer)
 
   app.all('*', (req, res) => {
     res.status(404)

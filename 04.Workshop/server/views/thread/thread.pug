@@ -17,6 +17,10 @@ block main-content
       for answer in answers
         div.well-sm= answer.content
         p.author= answer.author.username
+        if currentUser && currentUser.isAdmin()
+          - let deleteAnswerRoute = '/answer/' + answer.id + '/delete'
+          form(method="post", action=deleteAnswerRoute)
+            button.btn-danger(type="submit") Delete
     if currentUser
     - let commentRoute = '/comment/' + thread.id + '/' + thread.title
       form(method='post' action=commentRoute id="commentForm")

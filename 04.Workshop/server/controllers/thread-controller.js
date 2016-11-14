@@ -4,6 +4,27 @@ const User = mongoose.model('User')
 const Thread = mongoose.model('Thread')
 const Answer = mongoose.model('Answer')
 
+
+function showThreadPage (req, res, threadID) {
+  Thread
+    .findOne({ 'id': threadID })
+    .populate('answers')
+    .then((thread) => {
+      if (!thread) {
+        // ERROR
+        console.log('No thread found!')
+        return
+      }
+      Thread.populate(thread, { path: 'answers.author', model: User }, (err, te) => {
+        if (err) {
+          console.log('ERROR IN POPULATING AUTHORS IN THREAD-CONTROLLER.JS')
+        } else {
+          res.render('thread/thread', { thread: thread, answers: thread.answers })
+        }
+      })
+    })
+}
+
 module.exports = {
   showCreate: (req, res) => {
     res.render('thread/register')
@@ -48,23 +69,7 @@ module.exports = {
 
   showThread: (req, res) => {
     let threadID = req.params.id === 'js' ? 0 : req.params.id
-    Thread
-      .findOne({ 'id': threadID })
-      .populate('answers')
-      .then((thread) => {
-        if (!thread) {
-          // ERROR
-          console.log('No thread found!')
-          return
-        }
-        Thread.populate(thread, { path: 'answers.author', model: User }, (err, te) => {
-          if (err) {
-            console.log('ERROR IN POPULATING AUTHORS IN THREAD-CONTROLLER.JS')
-          } else {
-            res.render('thread/thread', { thread: thread, answers: thread.answers })
-          }
-        })
-      })
+    showThreadPage(req, res, threadID)
   },
 
   editThread: (req, res) => {
@@ -167,6 +172,28 @@ module.exports = {
                   })
               })
           })
+      })
+  },
+
+  deleteAnswer: (req, res) => {
+    let answerId = req.params.id
+
+    Answer
+      .findOne({ id: answerId })
+      .populate('thread')
+      .then((answer) => {
+        if (!answer) {
+          // ERROR
+          console.log('Could not delete answer with id ' + answerId + ' simlpy because it doesnt exist!')
+          return
+        }
+
+        // delete it
+        answer.remove()
+        // redirect to the answer's thread page
+        // throws error Cant set headers after they are set
+        // TODO: Look about a solution when you have internet
+        showThreadPage(req, res, answer.thread.id)
       })
   },
 
