@@ -15,7 +15,7 @@ module.exports = {
   isInRole: (role) => {
     return (req, res, next) => {
       // check if such a user exists (we're logged in) and if the user has that role
-      if (!req.user && !req.user.roles.indexOf(role) > -1 /* user has that role */) {
+      if (!req.user || !req.user.roles.indexOf(role) > -1 /* user has that role */) {
         res.redirect('/')
       }
 
