@@ -5,7 +5,7 @@ const Thread = mongoose.model('Thread')
 const Answer = mongoose.model('Answer')
 
 
-function showThreadPage (req, res, threadID) {
+function showThreadPage(req, res, threadID) {
   Thread
     .findOne({ 'id': threadID })
     .populate('answers')
@@ -185,20 +185,57 @@ module.exports = {
 
     Answer
       .findOne({ id: answerId })
-      .populate('thread')
+      .populate(['thread', 'author'])
       .then((answer) => {
         if (!answer) {
           // ERROR
           console.log('Could not delete answer with id ' + answerId + ' simlpy because it doesnt exist!')
           return
         }
+        // remove from the threads' answers
+        Thread
+          .findById(answer.thread._id)
+          .then((thread) => {
+            if (!thread) {
+              // error!
+              console.log('There is something seriously wrong here')
+              return
+            }
 
-        // delete it
-        answer.remove()
-        // redirect to the answer's thread page
-        // throws error Cant set headers after they are set
-        // TODO: Look about a solution when you have internet
-        showThreadPage(req, res, answer.thread.id)
+            let answerIndex = thread.answers.indexOf(answer._id)
+            if (answerIndex === -1) {
+              // error!
+              console.log('Error: The answer is not in the threads answers array')
+              return
+            }
+            thread.answers.splice(answerIndex, 1)  // remove it
+            thread.save()
+            // remove from the user's answers
+            User
+              .findById(answer.author._id)
+              .then((user) => {
+                if (!user) {
+                  console.log('An answer were deleting does not have an author')
+                  return
+                }
+
+                let answerIndex = user.answers.indexOf(answer._id)
+                if (answerIndex === -1) {
+                  // error
+                  console.log('An answer were deleting from the users answers array is not there')
+                  return
+                }
+                user.answers.splice(answerIndex, 1)  // remove it
+                user.save()
+
+                // delete it
+                answer.remove()
+                // redirect to the answer's thread page
+                // throws error Cant set headers after they are set
+                // TODO: Look about a solution when you have internet
+                showThreadPage(req, res, answer.thread.id)
+              })
+          })
       })
   },
 
