@@ -16,20 +16,16 @@ module.exports = {
   showProfile: (req, res) => {
     let username = req.params.username
     User
-      .findOne({username: username})
-      .populate('answers')
+      .findOne({ username: username })
+      .populate(['answers', 'threads'])
       .then((user) => {
         if (!user) {
           // ERROR!!!
           console.log('Invalid User!')
         }
 
-        // get his articles
-        Thread
-          .find({author: user._id})
-          .then((threads) => {
-            res.render('user/profile', {user: user, threads: threads, answers: user.answers})
-          })
+        // get the threads he has started
+        res.render('user/profile', { user: user, threads: user.threads, answers: user.answers })
       })
   },
 
@@ -63,7 +59,7 @@ module.exports = {
     let loginUser = req.body
 
     User
-      .findOne({'username': loginUser.username})
+      .findOne({ 'username': loginUser.username })
       .then((user) => {
         if (!user) {
           // invalid username
@@ -87,9 +83,6 @@ module.exports = {
             })
           }
         }
-
-
-
       })
   }
 }

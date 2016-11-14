@@ -5,7 +5,7 @@ const Thread = mongoose.model('Thread')
 const Answer = mongoose.model('Answer')
 
 
-function showThreadPage(req, res, threadID) {
+function showThreadPage (req, res, threadID) {
   Thread
     .findOne({ 'id': threadID })
     .populate('answers')
@@ -115,6 +115,11 @@ module.exports = {
           Thread
             .create(thread)
             .then((thread) => {
+              // add the thread to the user's threads array
+              User.findById(thread.author).then((user) => {
+                user.threads.push(thread._id)
+                user.save()
+              })
               console.log('Created a new thread with title ' + thread.title)
               res.redirect('/')
             })

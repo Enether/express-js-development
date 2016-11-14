@@ -18,6 +18,12 @@ let userSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     default: [],
     ref: 'Answer'
+  }],
+
+  threads: [{
+    type: mongoose.Schema.Types.ObjectId,
+    default: [],
+    ref: 'Thread'
   }]
 })
 
