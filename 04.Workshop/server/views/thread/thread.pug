@@ -9,7 +9,7 @@ block main-content
       - let threadRoute = '/post/' + thread.id + '/' + thread.title
       form(method="post", action=threadRoute)
         button.btn-danger(type="submit") Delete
-      - let updateRoute = threadRoute + '/update'
+      - let updateRoute = threadRoute + '/edit'
       a.btn-warning(href=updateRoute) Edit
     h3 Answers
     br

@@ -28,6 +28,9 @@ module.exports = (app) => {
   app.get('/post/:id/:title', controllers.thread.showThread)
   // delete thread request
   app.post('/post/:id/:title', auth.isInRole('Admin'), controllers.thread.deleteThread)
+  // edit thread page
+  app.get('/post/:id/:title/edit', auth.isInRole('Admin'), controllers.thread.showEditPage)
+  app.post('/thread/:id/edit', auth.isInRole('Admin'), controllers.thread.editThread)
   // add comment action
   app.post('/comment/:id/:title', auth.isAuthenticated, controllers.thread.addComment)
 

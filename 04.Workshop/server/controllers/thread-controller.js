@@ -30,6 +30,22 @@ module.exports = {
       })
   },
 
+  showEditPage: (req, res) => {
+    let threadId = req.params.id
+
+    Thread
+      .findOne({id: threadId})
+      .then((thread) => {
+        if (!thread) {
+          // ERROR!
+          console.log('No such thread with ID ' + threadId + ' found for editing!')
+          return
+        }
+
+        res.render('thread/edit', {thread: thread})
+      })
+  },
+
   showThread: (req, res) => {
     let threadID = req.params.id === 'js' ? 0 : req.params.id
     Thread
@@ -48,6 +64,27 @@ module.exports = {
             res.render('thread/thread', { thread: thread, answers: thread.answers })
           }
         })
+      })
+  },
+
+  editThread: (req, res) => {
+    let threadId = req.params.id
+
+    Thread
+      .findOne({id: threadId})
+      .then((thread) => {
+        if (!thread) {
+          // ERROR
+          console.log('No such thread with ID ' + threadId + ' found for editing!')
+          return
+        }
+        // update the thread
+        thread.title = req.body.title
+        thread.content = req.body.content
+
+        thread.save()
+        let threadUrl = '/post/' + thread.id + '/' + thread.title
+        res.redirect(threadUrl)
       })
   },
 

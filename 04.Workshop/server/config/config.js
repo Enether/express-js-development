@@ -6,7 +6,7 @@ const rootPath = path.normalize(path.join(__dirname, '../../'))
 module.exports = {
   development: {
     rootPath: rootPath,
-    db: 'mongodb://localhost:27017/expressjs-workshop-forum-system',
+    db: 'mongodb://127.0.0.1:27017/expressjs-workshop-forum-system',
     port: port,
     sessionSecretKey: 'd3v3l0pm3nt'
   },

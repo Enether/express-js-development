@@ -1,0 +1,22 @@
+extends ../shared/layout
+
+block main-content
+  - let editPostRoute = '/thread/' + thread.id + '/edit'
+  form.form-horizontal(action=editPostRoute, method='POST')
+    fieldset
+      #legend
+        legend(style="color: red;") Edit an existing forum post
+      .control-group
+        // Title
+        label.control-label(for='title' style="color: red;") Title
+        .controls
+          input.input-xlarge(type='text', name='title', placeholder='' required style="width:450px; height: 30px;" value=thread.title)
+      .control-group
+        // Content
+        label.control-label(for='content' style="color: red;") Body
+        .controls
+          textarea.input-xlarge(name='content', placeholder='' required style="width:640px; height:320px;")= thread.content
+      .control-group
+        // Button
+        .controls
+          button.btn.btn-success Edit Post
