@@ -21,7 +21,7 @@ let answerSchema = mongoose.Schema({
   content: {
     type: String,
     required: true
-  }, 
+  },
 
   id: {
     type: Number,

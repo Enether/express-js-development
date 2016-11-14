@@ -5,7 +5,7 @@ const Thread = mongoose.model('Thread')
 const Answer = mongoose.model('Answer')
 
 
-function showThreadPage (req, res, threadID) {
+function showThreadPage(req, res, threadID) {
   Thread
     .findOne({ 'id': threadID })
     .populate('answers')
@@ -208,7 +208,10 @@ module.exports = {
           console.log('Unsuccessful delete request. Thread with id ' + threadId + ' does not exist.')
           return
         }
-
+        // remove all the thread's answers
+        for (let answerId of thread.answers) {
+          Answer.findById(answerId).then((answer) => { answer.remove() })
+        }
         thread.remove()
         res.redirect('/')
       })
