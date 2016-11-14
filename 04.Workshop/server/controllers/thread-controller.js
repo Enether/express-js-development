@@ -34,7 +34,7 @@ module.exports = {
     let threadId = req.params.id
 
     Thread
-      .findOne({id: threadId})
+      .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR!
@@ -42,7 +42,7 @@ module.exports = {
           return
         }
 
-        res.render('thread/edit', {thread: thread})
+        res.render('thread/edit', { thread: thread })
       })
   },
 
@@ -71,7 +71,7 @@ module.exports = {
     let threadId = req.params.id
 
     Thread
-      .findOne({id: threadId})
+      .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR
@@ -137,25 +137,34 @@ module.exports = {
         answer.thread = thread._id
         answer.author = req.user._id  // attach the user to the article
         answer.creationDate = new Date()
-
         Answer
-          .create(answer)  // save the answer to the db
-          .then((answer) => {
-            console.log(thread.answers)
-            thread.answers.push(answer._id)  // save it to the thread's answers too
-            console.log(thread.answers)
-            thread.save()
-            User
-              .findById(answer.author)
-              .then((user) => {
-                if (!user) {
-                  console.log('No user when trying to add a comment, this shouldnt be happening! :O')
-                  throw Error
-                }
+          .findOne()
+          .sort('-id')  // get the latest ID
+          .then((newestAnswer) => {
+            let incrementedID = 1
 
-                user.answers.push(answer._id)  // save the answer to the user's answers too
-                user.save()
-                res.redirect('/post/' + threadId + '/' + req.params.title)
+            if (newestAnswer) incrementedID = parseInt(newestAnswer.id) + 1
+
+            answer.id = incrementedID
+            Answer
+              .create(answer)  // save the answer to the db
+              .then((answer) => {
+                console.log(thread.answers)
+                thread.answers.push(answer._id)  // save it to the thread's answers too
+                console.log(thread.answers)
+                thread.save()
+                User
+                  .findById(answer.author)
+                  .then((user) => {
+                    if (!user) {
+                      console.log('No user when trying to add a comment, this shouldnt be happening! :O')
+                      throw Error
+                    }
+
+                    user.answers.push(answer._id)  // save the answer to the user's answers too
+                    user.save()
+                    res.redirect('/post/' + threadId + '/' + req.params.title)
+                  })
               })
           })
       })
@@ -165,7 +174,7 @@ module.exports = {
     let threadId = req.params.id
 
     Thread
-      .findOne({id: threadId})
+      .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR
