@@ -1,0 +1,24 @@
+extends ../shared/layout
+
+block main-content
+  .container
+    .row
+      section.content
+        h1 Site Admins
+        .col-md-8.col-md-offset-2
+          .panel.panel-default
+            .panel-body
+              .table-container
+                table.table.table-filter
+                  tbody
+                    for admin in admins
+                      tr(data-status='pagado')
+                        td
+                          a.star(href='javascript:;')
+                            i.glyphicon.glyphicon-star
+                        td
+                          .media
+                            a.pull-left(href='#')
+                              img.media-photo(src='https://s3.amazonaws.com/uifaces/faces/twitter/fffabs/128.jpg')
+                            .media-body
+                              h4.title= admin.username

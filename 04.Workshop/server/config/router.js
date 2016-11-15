@@ -37,6 +37,10 @@ module.exports = (app) => {
   app.post('/answer/:id/delete', auth.isAuthenticated, controllers.thread.deleteAnswer)
   // add answer action
   app.post('/answer/:id/:title', auth.isAuthenticated, controllers.thread.addAnswer)
+
+  // get page with all the admins
+  app.get('/admins/all', auth.isAuthenticated, controllers.admin.showAllAdminsPage)
+
   app.all('*', (req, res) => {
     res.status(404)
     res.send('404 Not Found :@')

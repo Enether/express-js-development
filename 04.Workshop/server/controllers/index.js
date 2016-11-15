@@ -10,9 +10,11 @@
 const homeController = require('./home-controller')
 const userController = require('./user-controller')
 const threadController = require('./thread-controller')
+const adminController = require('./admin-controller')
 
 module.exports = {
   home: homeController,
   user: userController,
-  thread: threadController
+  thread: threadController,
+  admin: adminController
 }
