@@ -10,3 +10,10 @@ block main-content
         blockquote
           p= thread.content
           footer= thread.author.username
+  footer
+    h4 Pages
+    ul.pagination
+      for page in pages
+        li
+          - let pageQuery = '?page=' + page
+          a(href=pageQuery)= page

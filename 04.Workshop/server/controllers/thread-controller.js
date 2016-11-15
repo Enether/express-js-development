@@ -4,6 +4,14 @@ const User = mongoose.model('User')
 const Thread = mongoose.model('Thread')
 const Answer = mongoose.model('Answer')
 
+function getPagesArray (pagesCount) {
+  // get an array of all the pages we want to display in articles/list
+  let pages = []
+  for (let i = 1; i <= pagesCount; i++) {
+    pages.push(i)
+  }
+  return pages
+}
 
 function showThreadPage (req, res, threadID) {
   let nonFatalError = ''
@@ -26,7 +34,7 @@ function showThreadPage (req, res, threadID) {
         if (err) {
           console.log('ERROR IN POPULATING AUTHORS IN THREAD-CONTROLLER.JS')
         } else {
-          
+
           res.render('thread/thread', { thread: thread, answers: thread.answers, nonFatalError: nonFatalError })
         }
       })
@@ -39,6 +47,7 @@ module.exports = {
   },
 
   showList: (req, res) => {
+    let page = parseInt(req.query.page || '0') - 1
     // 20 threads sorted by their last answer's date
     Thread
       .find()
@@ -53,9 +62,19 @@ module.exports = {
           return x.answers[x.answers.length - 1].creationDate < y.answers[y.answers.length - 1].creationDate
         })
         // take the first 20
-        let orderedThreads = threads.slice(0, Math.min(threads.length, 20))
-
-        res.render('thread/list', { threads: orderedThreads })
+        console.log(threads)
+        let orderedThreads = threads.slice(20 * page, Math.min(threads.length, (20 * page) + 20))
+        console.log(orderedThreads)
+        Thread.count({}, (err, threadsCount) => {
+          if (err) {
+            req.session.nonFatalError = err.message
+            res.redirect('/')
+            return
+          }
+          let pageCount = Math.ceil(threadsCount / 20)
+          let pages = getPagesArray(pageCount)
+          res.render('thread/list', { threads: orderedThreads, pages: pages })
+        })
       })
   },
 
