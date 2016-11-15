@@ -27,7 +27,9 @@ let threadSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     default: [],
     ref: 'Answer'
-  }]
+  }],
+
+  views: {type: Number, default: 0}
 })
 
 mongoose.model('Thread', threadSchema)

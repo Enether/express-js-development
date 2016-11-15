@@ -82,7 +82,7 @@ module.exports = {
     }
     Thread
       .findOne({ 'id': threadID })
-      .populate('answers')
+      .populate(['answers', 'author'])
       .then((thread) => {
         if (!thread) {
           // ERROR
@@ -95,8 +95,18 @@ module.exports = {
           if (err) {
             console.log('ERROR IN POPULATING AUTHORS IN THREAD-CONTROLLER.JS')
           } else {
+            // increment the thread's views
+            thread.views += 1
+            
+            thread.save((err) => {
+              if (err) {
+                req.session.nonFatalError = err
+                res.redirect('/')
+                return
+              }
 
-            res.render('thread/thread', { thread: thread, answers: thread.answers, nonFatalError: nonFatalError })
+              res.render('thread/thread', { thread: thread, answers: thread.answers, nonFatalError: nonFatalError })
+            })
           }
         })
       })

@@ -6,7 +6,10 @@ block main-content
   div(class="container")
     h2= thread.title
     div(class="well")= thread.content
+    - let viewsStr = 'Views: ' + thread.views
+    p.author(style="float:left; font-style: italic;")= viewsStr
     p.author(style="float:right;")= thread.author.username
+    br
     if currentUser && currentUser.isAdmin()
       - let threadRoute = '/post/' + thread.id + '/' + thread.title
       form(method="post", action=threadRoute)

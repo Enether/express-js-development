@@ -9,6 +9,8 @@ block main-content
         br
         blockquote
           p= thread.content
+          - let viewsStr = 'Views: ' + thread.views
+          footer= viewsStr
           footer= thread.author.username
   footer
     h4 Pages
