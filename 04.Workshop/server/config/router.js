@@ -23,17 +23,17 @@ module.exports = (app) => {
 
   // thread list pageg
   app.get('/thread/list', controllers.thread.showList)
+  // edit thread page
+  app.get('/post/:id/:title/edit', controllers.thread.showEditPage)
+  app.post('/thread/:id/edit', controllers.thread.editThread)
 
   // show thread page
   app.get('/post/:id/:title', controllers.thread.showThread)
   // delete thread request
-  app.post('/post/:id/:title', auth.isInRole('Admin'), controllers.thread.deleteThread)
-  // edit thread page
-  app.get('/post/:id/:title/edit', auth.isInRole('Admin'), controllers.thread.showEditPage)
-  app.post('/thread/:id/edit', auth.isInRole('Admin'), controllers.thread.editThread)
-  
+  app.post('/post/:id/:title', controllers.thread.deleteThread)
+
   // delete answer action
-  app.post('/answer/:id/delete', auth.isInRole('Admin'), controllers.thread.deleteAnswer)
+  app.post('/answer/:id/delete', controllers.thread.deleteAnswer)
   // add answer action
   app.post('/answer/:id/:title', auth.isAuthenticated, controllers.thread.addAnswer)
   app.all('*', (req, res) => {
