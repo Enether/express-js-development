@@ -11,7 +11,7 @@ module.exports = (app) => {
   app.post('/register', controllers.user.register)
 
   // user login page
-  app.get('/login', controllers.user.showLogin) 
+  app.get('/login', controllers.user.showLogin)
   // login action
   app.post('/login', controllers.user.login)
   // user profile
@@ -21,19 +21,20 @@ module.exports = (app) => {
   app.get('/thread/create', auth.isAuthenticated, controllers.thread.showCreate)
   app.post('/thread/create', auth.isAuthenticated, controllers.thread.create)
 
-  // thread list pageg
+  // thread list page
   app.get('/thread/list', controllers.thread.showList)
-  // edit thread page
-  app.get('/post/:id/:title/edit', controllers.thread.showEditPage)
-  app.post('/thread/:id/edit', controllers.thread.editThread)
+
 
   // show thread page
   app.get('/post/:id/:title', controllers.thread.showThread)
+  // edit thread page
+  app.get('/post/:id/:title/edit', auth.isAuthenticated, controllers.thread.showEditPage)
+  app.post('/thread/:id/edit', controllers.thread.editThread)
   // delete thread request
-  app.post('/post/:id/:title', controllers.thread.deleteThread)
+  app.post('/post/:id/:title', auth.isAuthenticated, controllers.thread.deleteThread)
 
   // delete answer action
-  app.post('/answer/:id/delete', controllers.thread.deleteAnswer)
+  app.post('/answer/:id/delete', auth.isAuthenticated, controllers.thread.deleteAnswer)
   // add answer action
   app.post('/answer/:id/:title', auth.isAuthenticated, controllers.thread.addAnswer)
   app.all('*', (req, res) => {

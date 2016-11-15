@@ -5,7 +5,7 @@ const Thread = mongoose.model('Thread')
 const Answer = mongoose.model('Answer')
 
 
-function showThreadPage(req, res, threadID) {
+function showThreadPage (req, res, threadID) {
   Thread
     .findOne({ 'id': threadID })
     .populate('answers')
@@ -61,9 +61,14 @@ module.exports = {
           // ERROR!
           console.log('No such thread with ID ' + threadId + ' found for editing!')
           return
+        } else if ((!req.user.isAdmin() || req.user.isAuthor(thread))) {
+          // unauthorized access
+          res.redirect(`/post/${thread.id}/${thread.title}`)
+          return
         }
 
         res.render('thread/edit', { thread: thread })
+        return
       })
   },
 
@@ -74,13 +79,21 @@ module.exports = {
 
   editThread: (req, res) => {
     let threadId = req.params.id
-
+    if (!req.isAuthenticated()) {
+      req.session.returnUrl = `/thread/${threadId}/edit`
+      res.redirect('/login')
+      return
+    }
     Thread
       .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR
           console.log('No such thread with ID ' + threadId + ' found for editing!')
+          return
+        } else if (!(req.user.isAuthor(thread) || req.user.isAdmin())) {
+          // unauthorized access!
+          res.redirect('/')
           return
         }
         // update the thread
@@ -131,16 +144,16 @@ module.exports = {
     let threadId = req.params.id  // from the URL /answer/:id/:title
     let answer = req.body
 
-    if (!req.isAuthenticated()) {
-      console.log('User must be authenticated!!!')
-      return
-    }
     // validate the thread
     Thread
       .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
           console.log('No thread with ID ' + threadId + ' exists!')
+          return
+        } else if (!(req.user.isAuthor(thread) || req.user.isAdmin())) {
+          // unauthorized access!
+          res.redirect('/')
           return
         }
 
@@ -200,8 +213,11 @@ module.exports = {
               // error!
               console.log('There is something seriously wrong here')
               return
+            } else if (!req.user.isAdmin()) {
+              // unauthorized access!
+              res.redirect('/')
+              return
             }
-
             let answerIndex = thread.answers.indexOf(answer._id)
             if (answerIndex === -1) {
               // error!
@@ -248,6 +264,10 @@ module.exports = {
         if (!thread) {
           // ERROR
           console.log('Unsuccessful delete request. Thread with id ' + threadId + ' does not exist.')
+          return
+        } else if (!req.user.isAdmin()) {
+          // Unauthorized deletion
+          res.redirect('/')
           return
         }
         // remove all the thread's answers

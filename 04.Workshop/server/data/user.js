@@ -38,6 +38,12 @@ userSchema.method({
   },
   isAdmin: function () {
     return this.roles.indexOf('Admin') > -1
+  },
+  isAuthor: function (article) {
+    if (!article) {
+      return false
+    }
+    return this.id.toString() === article.author.toString()
   }
 })
 
