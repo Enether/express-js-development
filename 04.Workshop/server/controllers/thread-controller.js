@@ -13,34 +13,6 @@ function getPagesArray (pagesCount) {
   return pages
 }
 
-function showThreadPage (req, res, threadID) {
-  let nonFatalError = ''
-  if (req.session.nonFatalError) {
-    nonFatalError = req.session.nonFatalError
-    delete req.session.nonFatalError
-  }
-  Thread
-    .findOne({ 'id': threadID })
-    .populate('answers')
-    .then((thread) => {
-      if (!thread) {
-        // ERROR
-        req.session.nonFatalError = `No thread with ID: ${threadID} exists!`
-        console.log('No thread found!')
-        res.redirect('/')
-        return
-      }
-      Thread.populate(thread, { path: 'answers.author', model: User }, (err, te) => {
-        if (err) {
-          console.log('ERROR IN POPULATING AUTHORS IN THREAD-CONTROLLER.JS')
-        } else {
-
-          res.render('thread/thread', { thread: thread, answers: thread.answers, nonFatalError: nonFatalError })
-        }
-      })
-    })
-}
-
 module.exports = {
   showCreate: (req, res) => {
     res.render('thread/register')
@@ -103,7 +75,31 @@ module.exports = {
 
   showThread: (req, res) => {
     let threadID = req.params.id === 'js' ? 0 : req.params.id
-    showThreadPage(req, res, threadID)
+    let nonFatalError = ''
+    if (req.session.nonFatalError) {
+      nonFatalError = req.session.nonFatalError
+      delete req.session.nonFatalError
+    }
+    Thread
+      .findOne({ 'id': threadID })
+      .populate('answers')
+      .then((thread) => {
+        if (!thread) {
+          // ERROR
+          req.session.nonFatalError = `No thread with ID: ${threadID} exists!`
+          console.log('No thread found!')
+          res.redirect('/')
+          return
+        }
+        Thread.populate(thread, { path: 'answers.author', model: User }, (err, te) => {
+          if (err) {
+            console.log('ERROR IN POPULATING AUTHORS IN THREAD-CONTROLLER.JS')
+          } else {
+
+            res.render('thread/thread', { thread: thread, answers: thread.answers, nonFatalError: nonFatalError })
+          }
+        })
+      })
   },
 
   editThread: (req, res) => {
@@ -233,21 +229,22 @@ module.exports = {
         Thread
           .findById(answer.thread._id)
           .then((thread) => {
-            if (!thread) {
+            let threadDetailsUrl = `/post/${thread.id}/${thread.title}`
+            if (!thread) {  // check if article exists
               req.session.nonFatalError = 'The thread saved in the answer does not exist!'
               res.redirect('/')
               return
-            } else if (!req.user.isAdmin()) {
+            } else if (!req.user.isAdmin()) {  // check if user is authorized
               // unauthorized access!
               req.session.nonFatalError = 'You do not have permission for that action'
               res.redirect('/')
               return
             }
             let answerIndex = thread.answers.indexOf(answer._id)
-            if (answerIndex === -1) {
+            if (answerIndex === -1) {  // check if the answer is in the thread's answers'
               // error!
               req.session.nonFatalError = "The answer you're trying to delete is not in the thread's answers array"
-              res.redirect(`/post/${thread.id}/${thread.title}`)
+              res.redirect(threadDetailsUrl)
               return
             }
             thread.answers.splice(answerIndex, 1)  // remove it
@@ -256,17 +253,17 @@ module.exports = {
             User
               .findById(answer.author._id)
               .then((user) => {
-                if (!user) {
+                if (!user) {  // check if user exists
                   req.session.nonFatalError = "The answer you're deleting does not have an author"
-                  res.redirect(`/post/${thread.id}/${thread.title}`)
+                  res.redirect(threadDetailsUrl)
                   return
                 }
 
                 let answerIndex = user.answers.indexOf(answer._id)
-                if (answerIndex === -1) {
+                if (answerIndex === -1) {  // check if answer is in the users answers array
                   // error
                   req.session.nonFatalError = 'An answer were deleting from the users answers array is not there'
-                  res.redirect(`/post/${thread.id}/${thread.title}`)
+                  res.redirect(threadDetailsUrl)
                   return
                 }
                 user.answers.splice(answerIndex, 1)  // remove it
@@ -275,7 +272,7 @@ module.exports = {
                 // delete it
                 answer.remove()
                 // redirect to the answer's thread page
-                showThreadPage(req, res, answer.thread.id)
+                res.redirect(threadDetailsUrl)
               })
           })
       })
