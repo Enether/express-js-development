@@ -2,15 +2,14 @@
 const encryption = require('../utilities/encryption')
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
-const Thread = mongoose.model('Thread')
 
 module.exports = {
   showRegister: (req, res) => {
-    res.render('user/register')
+    res.render('user/register', { regArgs: {} })
   },
 
   showLogin: (req, res) => {
-    res.render('user/login')
+    res.render('user/login', { logArgs: {} })
   },
 
   showProfile: (req, res) => {
@@ -21,7 +20,8 @@ module.exports = {
       .then((user) => {
         if (!user) {
           // ERROR!!!
-          console.log('Invalid User!')
+          req.session.nonFatalError = 'Invalid User!'
+          res.redirect('/')
         }
 
         // get the threads he has started
@@ -34,36 +34,48 @@ module.exports = {
 
     if (user.password !== user.password_confirm) {
       // error
+      res.render('user/register', { regArgs: { username: user.username }, nonFatalError: 'Your passwords do not match :@' })
+      return
     } else {
       // check same username
-    }
-    delete user.confirm_password  // remove the useless confirm_password field because we're going to be saving to the DB
+      User
+        .find({ username: user.username })
+        .then(user => {
+          if (user) {
+            res.render('user/register', { regArgs: { username: user.username }, nonFatalError: 'Such an username already exists!' })
+            return
+          } else {
+            delete user.confirm_password  // remove the useless confirm_password field because we're going to be saving to the DB
 
-    user.salt = encryption.generateSalt()
-    user.hashedPass = encryption.generateHashedPassword(user.salt, user.password)
+            user.salt = encryption.generateSalt()
+            user.hashedPass = encryption.generateHashedPassword(user.salt, user.password)
 
-    User
-      .create(user)
-      .then((user) => {
-        req.logIn(user, (err, user) => {
-          if (err) {
-            console.log('Error while logging in!')
+            User
+              .create(user)
+              .then((user) => {
+                req.logIn(user, (err, user) => {
+                  if (err) {
+                    req.session.nonFatalError = 'Error while logging in after registration :('
+                  }
+
+                  res.redirect('/')
+                })
+              })
           }
-
-          res.redirect('/')
         })
-      })
+    }
   },
 
   login: (req, res) => {
     let loginUser = req.body
-
+    let usernameCandidate = loginUser.username
     User
-      .findOne({ 'username': loginUser.username })
+      .findOne({ 'username': usernameCandidate })
       .then((user) => {
         if (!user) {
           // invalid username
-          console.log('Invalid Username!')
+          res.render('user/login', { logArgs: { username: usernameCandidate }, nonFatalError: 'Invalid credentials!' })
+          return
         } else {
           // validate password
           let salt = user.salt
@@ -71,12 +83,15 @@ module.exports = {
 
           if (loginHashedPassword !== user.hashedPass) {
             // invalid password
-            console.log('Invalid Password!')
+            res.render('user/login', { logArgs: { username: usernameCandidate }, nonFatalError: 'Invalid credentials!' })
+            return
           } else {
             // everything is OK
             req.logIn(user, (err, user) => {
               if (err) {
                 // Error
+                req.session.nonFatalError = err.message
+                res.redirect('/')
               } else {
                 res.redirect('/')
               }
