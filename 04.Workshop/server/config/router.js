@@ -41,6 +41,7 @@ module.exports = (app) => {
   // get page with all the admins
   app.get('/admins/all', auth.isAuthenticated, controllers.admin.showAllAdminsPage)
   app.get('/admins/usersList', auth.isAuthenticated, controllers.admin.showAllUsersPage)
+  app.post('/admins/add/:user', auth.isAuthenticated, controllers.admin.addAdmin)
 
   app.all('*', (req, res) => {
     res.status(404)
