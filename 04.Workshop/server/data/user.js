@@ -48,5 +48,22 @@ userSchema.method({
 })
 
 
-mongoose.model('User', userSchema)
+const User = mongoose.model('User', userSchema)
+
+module.exports.seedAdmin = () => {
+  // create an admin user if he doesn't exist
+  User.findOne({ username: 'admin' }).then(admin => {
+    if (!admin) {
+      let adminSalt = encryption.generateSalt()
+      let adminObject = {
+        username: 'admin',
+        salt: adminSalt,
+        hashedPass: encryption.generateHashedPassword(adminSalt, '1234'),
+        roles: ['Admin']
+      }
+
+      User.create(adminObject)
+    }
+  })
+}
 

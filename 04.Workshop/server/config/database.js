@@ -13,7 +13,7 @@ module.exports = (config) => {
 
   db.on('error', (err) => { console.log('Database error: ' + err) })
 
-  require('../data/user')
+  require('../data/user').seedAdmin()
   require('../data/thread')
   require('../data/answer')
 }
