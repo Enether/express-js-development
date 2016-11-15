@@ -149,10 +149,6 @@ module.exports = {
       .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
-          console.log('No thread with ID ' + threadId + ' exists!')
-          return
-        } else if (!(req.user.isAuthor(thread) || req.user.isAdmin())) {
-          // unauthorized access!
           res.redirect('/')
           return
         }
