@@ -6,20 +6,28 @@ const Answer = mongoose.model('Answer')
 
 
 function showThreadPage (req, res, threadID) {
+  let nonFatalError = ''
+  if (req.session.nonFatalError) {
+    nonFatalError = req.session.nonFatalError
+    delete req.session.nonFatalError
+  }
   Thread
     .findOne({ 'id': threadID })
     .populate('answers')
     .then((thread) => {
       if (!thread) {
         // ERROR
+        req.session.nonFatalError = `No thread with ID: ${threadID} exists!`
         console.log('No thread found!')
+        res.redirect('/')
         return
       }
       Thread.populate(thread, { path: 'answers.author', model: User }, (err, te) => {
         if (err) {
           console.log('ERROR IN POPULATING AUTHORS IN THREAD-CONTROLLER.JS')
         } else {
-          res.render('thread/thread', { thread: thread, answers: thread.answers })
+          
+          res.render('thread/thread', { thread: thread, answers: thread.answers, nonFatalError: nonFatalError })
         }
       })
     })
@@ -59,10 +67,12 @@ module.exports = {
       .then((thread) => {
         if (!thread) {
           // ERROR!
-          console.log('No such thread with ID ' + threadId + ' found for editing!')
+          req.session.nonFatalError = `No such thread with ID ${threadId} exists!`
+          res.redirect('/')
           return
         } else if ((!req.user.isAdmin() || req.user.isAuthor(thread))) {
           // unauthorized access
+          req.session.nonFatalError = 'You do not have permission for that action!'
           res.redirect(`/post/${thread.id}/${thread.title}`)
           return
         }
@@ -79,17 +89,14 @@ module.exports = {
 
   editThread: (req, res) => {
     let threadId = req.params.id
-    if (!req.isAuthenticated()) {
-      req.session.returnUrl = `/thread/${threadId}/edit`
-      res.redirect('/login')
-      return
-    }
+
     Thread
       .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR
-          console.log('No such thread with ID ' + threadId + ' found for editing!')
+          req.session.nonFatalError = `No such thread with ID ${threadId} exists!`
+          res.redirect('/')
           return
         } else if (!(req.user.isAuthor(thread) || req.user.isAdmin())) {
           // unauthorized access!
@@ -149,6 +156,7 @@ module.exports = {
       .findOne({ id: threadId })
       .then((thread) => {
         if (!thread) {
+          req.session.nonFatalError = `No thread with ID ${threadId} exists!`
           res.redirect('/')
           return
         }
@@ -198,7 +206,8 @@ module.exports = {
       .then((answer) => {
         if (!answer) {
           // ERROR
-          console.log('Could not delete answer with id ' + answerId + ' simlpy because it doesnt exist!')
+          req.session.nonFatalError = `Could not delete answer with id ${answerId} simply because it doesnt exist!`
+          res.redirect('/')
           return
         }
         // remove from the threads' answers
@@ -206,18 +215,20 @@ module.exports = {
           .findById(answer.thread._id)
           .then((thread) => {
             if (!thread) {
-              // error!
-              console.log('There is something seriously wrong here')
+              req.session.nonFatalError = 'The thread saved in the answer does not exist!'
+              res.redirect('/')
               return
             } else if (!req.user.isAdmin()) {
               // unauthorized access!
+              req.session.nonFatalError = 'You do not have permission for that action'
               res.redirect('/')
               return
             }
             let answerIndex = thread.answers.indexOf(answer._id)
             if (answerIndex === -1) {
               // error!
-              console.log('Error: The answer is not in the threads answers array')
+              req.session.nonFatalError = "The answer you're trying to delete is not in the thread's answers array"
+              res.redirect(`/post/${thread.id}/${thread.title}`)
               return
             }
             thread.answers.splice(answerIndex, 1)  // remove it
@@ -227,14 +238,16 @@ module.exports = {
               .findById(answer.author._id)
               .then((user) => {
                 if (!user) {
-                  console.log('An answer were deleting does not have an author')
+                  req.session.nonFatalError = "The answer you're deleting does not have an author"
+                  res.redirect(`/post/${thread.id}/${thread.title}`)
                   return
                 }
 
                 let answerIndex = user.answers.indexOf(answer._id)
                 if (answerIndex === -1) {
                   // error
-                  console.log('An answer were deleting from the users answers array is not there')
+                  req.session.nonFatalError = 'An answer were deleting from the users answers array is not there'
+                  res.redirect(`/post/${thread.id}/${thread.title}`)
                   return
                 }
                 user.answers.splice(answerIndex, 1)  // remove it
@@ -243,8 +256,6 @@ module.exports = {
                 // delete it
                 answer.remove()
                 // redirect to the answer's thread page
-                // throws error Cant set headers after they are set
-                // TODO: Look about a solution when you have internet
                 showThreadPage(req, res, answer.thread.id)
               })
           })
@@ -259,7 +270,8 @@ module.exports = {
       .then((thread) => {
         if (!thread) {
           // ERROR
-          console.log('Unsuccessful delete request. Thread with id ' + threadId + ' does not exist.')
+          req.session.nonFatalError = `Unsuccessful delete request. Thread with id ${threadId} does not exist.`
+          res.redirect('/')
           return
         } else if (!req.user.isAdmin()) {
           // Unauthorized deletion

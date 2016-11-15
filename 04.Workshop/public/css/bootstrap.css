@@ -6770,3 +6770,7 @@ button.close {
 .answers {
   border-left: 3px solid grey;
 }
+.nonFatalError {
+  color: red;
+  font: 50px bold;
+}

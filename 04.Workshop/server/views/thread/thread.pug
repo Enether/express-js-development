@@ -1,6 +1,8 @@
 extends ../shared/layout
 
 block main-content
+  if (nonFatalError)
+      h1.nonFatalError= nonFatalError
   div(class="container")
     h2= thread.title
     div(class="well")= thread.content
