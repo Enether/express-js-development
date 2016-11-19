@@ -29,7 +29,28 @@ let threadSchema = mongoose.Schema({
     ref: 'Answer'
   }],
 
-  views: {type: Number, default: 0}
+  views: { type: Number, default: 0 }
+})
+
+// middleware to remove every dependant document on deletion
+threadSchema.pre('remove', true, function (next, done) {
+  const Answer = mongoose.model('Answer')
+  let promises = []
+  // fill promises with promises of answer deletions
+  for (let answerId of this.answers) {
+    promises.push(new Promise((resolve, reject) => {
+      Answer.findById(answerId).then((answer) => {
+        answer.remove().then(() => {
+          resolve()
+        })
+      })
+    }))
+  }
+
+  Promise.all(promises).then(() => {
+    done()
+    next()
+  })
 })
 
 mongoose.model('Thread', threadSchema)

@@ -304,12 +304,10 @@ module.exports = {
           res.redirect('/')
           return
         }
-        // remove all the thread's answers
-        for (let answerId of thread.answers) {
-          Answer.findById(answerId).then((answer) => { answer.remove() })
-        }
-        thread.remove()
-        res.redirect('/')
+
+        thread.remove().then(() => {
+          res.redirect('/')
+        })
       })
   }
 }
