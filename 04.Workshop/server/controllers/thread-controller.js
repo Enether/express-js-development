@@ -4,7 +4,7 @@ const User = mongoose.model('User')
 const Thread = mongoose.model('Thread')
 const Answer = mongoose.model('Answer')
 
-function getPagesArray (pagesCount) {
+function getPagesArray(pagesCount) {
   // get an array of all the pages we want to display in articles/list
   let pages = []
   for (let i = 1; i <= pagesCount; i++) {
@@ -97,7 +97,7 @@ module.exports = {
           } else {
             // increment the thread's views
             thread.views += 1
-            
+
             thread.save((err) => {
               if (err) {
                 req.session.nonFatalError = err
@@ -235,56 +235,63 @@ module.exports = {
           res.redirect('/')
           return
         }
+        answer.remove(req, function (err) {
+          if (err) {
+            // ERROR
+          }
+        })
         // remove from the threads' answers
-        Thread
-          .findById(answer.thread._id)
-          .then((thread) => {
-            let threadDetailsUrl = `/post/${thread.id}/${thread.title}`
-            if (!thread) {  // check if article exists
-              req.session.nonFatalError = 'The thread saved in the answer does not exist!'
-              res.redirect('/')
-              return
-            } else if (!req.user.isAdmin()) {  // check if user is authorized
-              // unauthorized access!
-              req.session.nonFatalError = 'You do not have permission for that action'
-              res.redirect('/')
-              return
-            }
-            let answerIndex = thread.answers.indexOf(answer._id)
-            if (answerIndex === -1) {  // check if the answer is in the thread's answers'
-              // error!
-              req.session.nonFatalError = "The answer you're trying to delete is not in the thread's answers array"
-              res.redirect(threadDetailsUrl)
-              return
-            }
-            thread.answers.splice(answerIndex, 1)  // remove it
-            thread.save()
-            // remove from the user's answers
-            User
-              .findById(answer.author._id)
-              .then((user) => {
-                if (!user) {  // check if user exists
-                  req.session.nonFatalError = "The answer you're deleting does not have an author"
-                  res.redirect(threadDetailsUrl)
-                  return
-                }
+        // Thread
+        //   .findById(answer.thread._id)
+        //   .then((thread) => {
+        //     let threadDetailsUrl = `/post/${thread.id}/${thread.title}`
+        //     if (!thread) {  // check if article exists
+        //       req.session.nonFatalError = 'The thread saved in the answer does not exist!'
+        //       res.redirect('/')
+        //       return
+        //     } else if (!req.user.isAdmin()) {  // check if user is authorized
+        //       // unauthorized access!
+        //       req.session.nonFatalError = 'You do not have permission for that action'
+        //       res.redirect('/')
+        //       return
+        //     }
+        //     let answerIndex = thread.answers.indexOf(answer._id)
+        //     if (answerIndex === -1) {  // check if the answer is in the thread's answers'
+        //       // error!
+        //       req.session.nonFatalError = "The answer you're trying to delete is not in the thread's answers array"
+        //       res.redirect(threadDetailsUrl)
+        //       return
+        //     }
+        //     thread.answers.splice(answerIndex, 1)  // remove it
+        //     thread.save()
+        //     // remove from the user's answers
+        //     User
+        //       .findById(answer.author._id)
+        //       .then((user) => {
+        //         if (!user) {  // check if user exists
+        //           req.session.nonFatalError = "The answer you're deleting does not have an author"
+        //           res.redirect(threadDetailsUrl)
+        //           return
+        //         }
 
-                let answerIndex = user.answers.indexOf(answer._id)
-                if (answerIndex === -1) {  // check if answer is in the users answers array
-                  // error
-                  req.session.nonFatalError = 'An answer were deleting from the users answers array is not there'
-                  res.redirect(threadDetailsUrl)
-                  return
-                }
-                user.answers.splice(answerIndex, 1)  // remove it
-                user.save()
+        //         if (user.answers.indexOf(answer._id) === -1) {  // check if answer is in the users answers array
+        //           // error
+        //           req.session.nonFatalError = 'An answer were deleting from the users answers array is not there'
+        //           res.redirect(threadDetailsUrl)
+        //           return
+        //         }
 
-                // delete it
-                answer.remove()
-                // redirect to the answer's thread page
-                res.redirect(threadDetailsUrl)
-              })
-          })
+        //         user.answers.remove(answer).then(() => {
+        //           user.save().then(() => {
+        //             // delete it
+        //             answer.remove().then(() => {
+        //               // redirect to the answer's thread page
+        //               res.redirect(threadDetailsUrl)
+        //             })
+        //           })
+        //         })
+        //       })
+        //   })
       })
   },
 
