@@ -47,8 +47,6 @@ userSchema.method({
   },
   // remove an answer from the user's answers
   removeAnswer: function (answerId, resolve, reject) {
-    console.log('USER ANSWERS')
-    console.log(this.answers)
     this.answers.remove(answerId)
     this.save().then(() => {
       resolve()

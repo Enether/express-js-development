@@ -32,13 +32,21 @@ html(lang='en')
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
           ul.nav.navbar-nav
             - if (currentUser)
+              - if (currentUser.isAdmin())
                 li
-                  a(href='/thread/create') Post a new Thread
+                  a(href="/admins/all") Users and Admins
                 li
-                  span= currentUser.username
-                li
-                  form#logout-form(method="post" action="/logout")
-                    input#logout-button(type="submit" value="Logout")              
+                  a(href="/admins/usersList") Users
+              li
+                a(href="/thread/list") Threads
+              li
+                a(href='/thread/create') Post a new Thread
+              li
+                - let profileLink = '/profile/' + currentUser.username
+                a(href=profileLink)= currentUser.username
+              li
+                form#logout-form(method="post" action="/logout")
+                  input#logout-button(type="submit" value="Logout")              
             - else
                 li
                   a(href="/register") Register
