@@ -30,11 +30,7 @@ let userSchema = mongoose.Schema({
 // add authenticate method to the DB model for easy authentication
 userSchema.method({
   authenticate: function (password) {
-    if (encryption.generateHashedPassword(this.salt, password) === this.hashedPass) {
-      return true
-    } else {
-      return false
-    }
+    return encryption.generateHashedPassword(this.salt, password) === this.hashedPass
   },
   isAdmin: function () {
     return this.roles.indexOf('Admin') > -1
