@@ -15,6 +15,8 @@ function validateUsernameAndPassword (res, user, pageUrl) {
     res.render(pageUrl, { userArgs: { username: usernameCandidate }, nonFatalError: 'Password can only contain letters and numbers. It also has a minimum length of 4 and a maximum length of 20!' })
     return false
   }
+
+  return true
 }
 
 function usernameIsValid (username) {
