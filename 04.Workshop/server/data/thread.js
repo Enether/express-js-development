@@ -32,13 +32,11 @@ let threadSchema = mongoose.Schema({
   views: { type: Number, default: 0 }
 })
 
-// middleware to remove every dependant document on deletion
-threadSchema.pre('remove', true, function (next, done) {
+function removeThreadAnswers (thread, next) {
+  // this function deletes all the answer in the given thread from the database, returning an array of promises for each answer deletion 
   const Answer = mongoose.model('Answer')
-  let promises = []
-  // fill promises with promises of answer deletions
-  for (let answerId of this.answers) {
-    promises.push(new Promise((resolve, reject) => {
+  return thread.answers.map((answerId) => {
+    return new Promise((resolve, reject) => {
       Answer.findById(answerId).then((answer) => {
         if (!answer) {
           reject()
@@ -48,8 +46,14 @@ threadSchema.pre('remove', true, function (next, done) {
           resolve()
         })
       })
-    }))
-  }
+    })
+  })
+}
+
+// middleware to remove every dependant document on deletion
+threadSchema.pre('remove', true, function (next, done) {
+  let promises = removeThreadAnswers(this, next)
+
 
   Promise.all(promises).then(() => {
     done()
@@ -58,10 +62,8 @@ threadSchema.pre('remove', true, function (next, done) {
 })
 
 threadSchema.method({
-  // removes an answer from the thread, returning a promise
+  // removes an answer from the thread, resolving a promise when ready
   removeAnswer: function (answerId, resolve, reject) {
-    console.log('THREAD ANSWERS')
-    console.log(this.answers)
     this.answers.remove(answerId)
     this.save().then(() => {
       resolve()
