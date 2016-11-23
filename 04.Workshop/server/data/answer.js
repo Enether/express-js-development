@@ -30,38 +30,46 @@ let answerSchema = mongoose.Schema({
   }
 })
 
-answerSchema.pre('remove', true, function (next, done, req) {
+function removeAnswerFromThread (answer, next) {
+  // this function removes the answer from the thread's answers list, returning a Promise
   const Thread = mongoose.model('Thread')
+  return new Promise(function (resolve, reject) {
+    console.log(answer.thread)
+    Thread.findById(answer.thread)
+      .then((thread) => {
+        if (!thread) {
+          let err = new Error('The thread saved in the answer does not exist!')
+          next(err)
+        } else if (thread.answers.indexOf(answer._id) === -1) {  // check if the answer is in the thread's answers
+          let err = new Error("The answer you're trying to delete is not in the thread's answers")
+          next(err)
+        }
+        thread.removeAnswer(answer._id, resolve, reject) // resolve is in here
+      })
+  })
+}
+function removeAnswerFromAuthor (answer, next) {
+  // this function removes this answer from the author's answers list, returning a Promise
   const User = mongoose.model('User')
-  // remove from the thread's answers
-  let promises = [new Promise((resolve, reject) => {
-    Thread.findById(this.thread)
-    .then((thread) => {
-      if (!thread) {
-        let err = new Error('The thread saved in the answer does not exist!')
-        next(err)
-      } else if (thread.answers.indexOf(this._id) === -1) {  // check if the answer is in the thread's answers
-        let err = new Error("The answer you're trying to delete is not in the thread's answers")
-        next(err)
-      }
-      thread.removeAnswer(this._id, resolve, reject) // resolve is in here
-    })
-  })]
-  // remove from the user's answers
-  promises.push(new Promise((resolve, reject) => {
-    User.findById(this.author)
+  return new Promise((resolve, reject) => {
+    User.findById(answer.author)
       .then((author) => {
         if (!author) {
           let err = new Error("The answer you're deleting does not have an author!")
           next(err)
-        } else if (author.answers.indexOf(this._id) === -1) {  // check if answer is in the user's answers
+        } else if (author.answers.indexOf(answer._id) === -1) {  // check if answer is in the user's answers
           let err = new Error("An answer we're deleting from the user's answers array is not there. :o")
           next(err)
         }
 
-        author.removeAnswer(this._id, resolve, reject)  // resolve is in here
+        author.removeAnswer(answer._id, resolve, reject)  // resolve is in here
       })
-  }))
+  })
+}
+
+answerSchema.pre('remove', true, function (next, done, req) {
+  // remove the answer from the connected Models first
+  let promises = [removeAnswerFromThread(this, next), removeAnswerFromAuthor(this, next)]
 
   Promise.all(promises).then(() => {
     next()
