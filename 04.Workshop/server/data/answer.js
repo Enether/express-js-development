@@ -34,29 +34,22 @@ answerSchema.pre('remove', true, function (next, done, req) {
   const Thread = mongoose.model('Thread')
   const User = mongoose.model('User')
   // remove from the thread's answers
-  // TODO: Move to Thread.js as removeAnswer function
   let promises = [new Promise((resolve, reject) => {
-    Thread.findById(this.thread._id)
+    Thread.findById(this.thread)
     .then((thread) => {
       if (!thread) {
         let err = new Error('The thread saved in the answer does not exist!')
-        next(err)
-      } else if (!req.user.isAdmin()) {  // check if user is authorized to delete an answer
-        let err = new Error('You do not have permission for that action!')
         next(err)
       } else if (thread.answers.indexOf(this._id) === -1) {  // check if the answer is in the thread's answers
         let err = new Error("The answer you're trying to delete is not in the thread's answers")
         next(err)
       }
-      thread.answers.remove(this._id)
-      thread.save().then(() => {
-        resolve()
-      })
+      thread.removeAnswer(this._id, resolve, reject) // resolve is in here
     })
   })]
   // remove from the user's answers
   promises.push(new Promise((resolve, reject) => {
-    User.findById(this.author._id)
+    User.findById(this.author)
       .then((author) => {
         if (!author) {
           let err = new Error("The answer you're deleting does not have an author!")
@@ -66,10 +59,7 @@ answerSchema.pre('remove', true, function (next, done, req) {
           next(err)
         }
 
-        author.answers.remove(this._id)
-        author.save().then(() => {
-          resolve()
-        })
+        author.removeAnswer(this._id, resolve, reject)  // resolve is in here
       })
   }))
 

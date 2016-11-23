@@ -40,6 +40,10 @@ threadSchema.pre('remove', true, function (next, done) {
   for (let answerId of this.answers) {
     promises.push(new Promise((resolve, reject) => {
       Answer.findById(answerId).then((answer) => {
+        if (!answer) {
+          reject()
+          return
+        }
         answer.remove().then(() => {
           resolve()
         })
@@ -51,6 +55,18 @@ threadSchema.pre('remove', true, function (next, done) {
     done()
     next()
   })
+})
+
+threadSchema.method({
+  // removes an answer from the thread, returning a promise
+  removeAnswer: function (answerId, resolve, reject) {
+    console.log('THREAD ANSWERS')
+    console.log(this.answers)
+    this.answers.remove(answerId)
+    this.save().then(() => {
+      resolve()
+    })
+  }
 })
 
 mongoose.model('Thread', threadSchema)
