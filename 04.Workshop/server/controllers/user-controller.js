@@ -59,9 +59,9 @@ module.exports = {
     } else {
       // check same username
       User
-        .find({ username: usernameCandidate })
-        .then(user => {
-          if (user) {
+        .findOne({ username: usernameCandidate })
+        .then(userExists => {
+          if (userExists) {
             res.render('user/register', { regArgs: { username: usernameCandidate }, nonFatalError: 'Such an username already exists!' })
             return
           } else {
@@ -72,8 +72,8 @@ module.exports = {
 
             User
               .create(user)
-              .then((user) => {
-                req.logIn(user, (err, user) => {
+              .then((newUser) => {
+                req.logIn(newUser, (err, newUser) => {
                   if (err) {
                     req.session.nonFatalError = 'Error while logging in after registration :('
                   }
