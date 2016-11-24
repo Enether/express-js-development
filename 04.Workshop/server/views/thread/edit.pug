@@ -1,7 +1,7 @@
 extends ../shared/layout
 
 block main-content
-  - let editPostRoute = '/thread/' + thread.id + '/edit'
+  - let editPostRoute = '/thread/' + thread.threadId + '/edit'
   form.form-horizontal(action=editPostRoute, method='POST')
     fieldset
       #legend
@@ -19,4 +19,4 @@ block main-content
       .control-group
         // Button
         .controls
-          button.btn.btn-success Edit Post
+          button.btn.btn-success(type="submit") Edit Post

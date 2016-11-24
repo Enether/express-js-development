@@ -4,7 +4,7 @@ block main-content
   div.row
     for thread in threads
       div(class="col-lg-1 col-offset-6 centered" style="margin-left: 50px; width: 400px;")  
-        - let threadLink = '/post/' + thread.id + '/' + thread.title
+        - let threadLink = '/post/' + thread.threadId + '/' + thread.title
         a(href=threadLink class="label label-info" style="font-size: 25px;")= thread.title
         br
         blockquote

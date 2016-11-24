@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const autoIncrement = require('mongoose-sequence')
 
 let threadSchema = mongoose.Schema({
   author: {
@@ -15,12 +16,6 @@ let threadSchema = mongoose.Schema({
   content: {
     type: String,
     required: true
-  },
-
-  id: {
-    type: Number,
-    required: true,
-    unique: true
   },
 
   answers: [{
@@ -71,5 +66,6 @@ threadSchema.method({
   }
 })
 
+threadSchema.plugin(autoIncrement, {inc_field: 'threadId'})
 mongoose.model('Thread', threadSchema)
 

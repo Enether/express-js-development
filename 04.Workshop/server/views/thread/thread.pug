@@ -11,7 +11,7 @@ block main-content
     p.author(style="float:right;")= thread.author.username
     br
     if currentUser && currentUser.isAdmin()
-      - let threadRoute = '/post/' + thread.id + '/' + thread.title
+      - let threadRoute = '/post/' + thread.threadId + '/' + thread.title
       form(method="post", action=threadRoute)
         button.btn-danger(type="submit") Delete
       - let updateRoute = threadRoute + '/edit'
@@ -23,12 +23,12 @@ block main-content
         div.well-sm= answer.content
         p.author= answer.author.username
         if currentUser && currentUser.isAdmin()
-          - let deleteAnswerRoute = '/answer/' + answer.id + '/delete'
+          - let deleteAnswerRoute = '/answer/' + answer.answerId + '/delete'
           form(method="post", action=deleteAnswerRoute)
             button.btn-danger(type="submit") Delete
     if currentUser
-    - let answerRoute = '/answer/' + thread.id + '/' + thread.title
-      form(method='post' action=answerRoute id="answerForm")
+    - let addAnswerRoute = '/answer/' + thread.threadId + '/' + thread.title
+      form(method='post' action=addAnswerRoute id="answerForm")
         div.form-group
           label(for="content") Answer:
             textarea.form-control(rows="5" name="content" id="content" onkeydown = "if (event.keyCode == 13) document.getElementById('answerForm').submit();")

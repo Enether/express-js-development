@@ -19,7 +19,7 @@ module.exports = {
   },
 
   showList: (req, res) => {
-    let page = parseInt(req.query.page || '0') - 1
+    let page = parseInt(req.query.page || '1') - 1
     // 20 threads sorted by their last answer's date
     Thread
       .find()
@@ -34,9 +34,9 @@ module.exports = {
           return x.answers[x.answers.length - 1].creationDate < y.answers[y.answers.length - 1].creationDate
         })
         // take the first 20
-        console.log(threads)
-        let orderedThreads = threads.slice(20 * page, Math.min(threads.length, (20 * page) + 20))
-        console.log(orderedThreads)
+        let pagesToSkip = 20 * page
+        let pageThreads = threads.slice(pagesToSkip, Math.min(threads.length, (pagesToSkip) + 20))
+
         Thread.count({}, (err, threadsCount) => {
           if (err) {
             req.session.nonFatalError = err.message
@@ -45,7 +45,7 @@ module.exports = {
           }
           let pageCount = Math.ceil(threadsCount / 20)
           let pages = getPagesArray(pageCount)
-          res.render('thread/list', { threads: orderedThreads, pages: pages })
+          res.render('thread/list', { threads: pageThreads, pages: pages })
         })
       })
   },
@@ -54,17 +54,17 @@ module.exports = {
     let threadId = req.params.id
 
     Thread
-      .findOne({ id: threadId })
+      .findOne({ threadId: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR!
           req.session.nonFatalError = `No such thread with ID ${threadId} exists!`
           res.redirect('/')
           return
-        } else if ((!req.user.isAdmin() || req.user.isAuthor(thread))) {
+        } else if (!req.user.isAdmin()) {
           // unauthorized access
           req.session.nonFatalError = 'You do not have permission for that action!'
-          res.redirect(`/post/${thread.id}/${thread.title}`)
+          res.redirect(`/post/${thread.threadId}/${thread.title}`)
           return
         }
 
@@ -81,7 +81,7 @@ module.exports = {
       delete req.session.nonFatalError
     }
     Thread
-      .findOne({ 'id': threadID })
+      .findOne({ threadId: threadID })
       .populate(['answers', 'author'])
       .then((thread) => {
         if (!thread) {
@@ -116,14 +116,14 @@ module.exports = {
     let threadId = req.params.id
 
     Thread
-      .findOne({ id: threadId })
+      .findOne({ threadId: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR
           req.session.nonFatalError = `No such thread with ID ${threadId} exists!`
           res.redirect('/')
           return
-        } else if (!(req.user.isAuthor(thread) || req.user.isAdmin())) {
+        } else if (!req.user.isAdmin()) {
           // unauthorized access!
           res.redirect('/')
           return
@@ -132,43 +132,26 @@ module.exports = {
         thread.title = req.body.title
         thread.content = req.body.content
 
-        thread.save()
-        let threadUrl = '/post/' + thread.id + '/' + thread.title
-        res.redirect(threadUrl)
+        thread.save().then(() => {
+          res.redirect(`/post/${thread.threadId}/${thread.title}`)
+        })
       })
   },
 
   create: (req, res) => {
-    // get the max ID and increment it on the new thread
+    let thread = req.body
+    thread.author = req.user._id
+
     Thread
-      .findOne()
-      .sort('-id')
-      .exec((err, item) => {
-        if (err) {
-          console.log(err)
-        } else {
-          let incrementedID = 1
+      .create(thread)
+      .then(thread => {
+        // save to user
+        User.findById(thread.author).then(user => {
+          user.threads.push(thread._id)
+          user.save()
+        })
 
-          if (item) {
-            incrementedID = parseInt(item.id) + 1
-          }
-
-          let thread = req.body
-
-          thread.author = req.user._id
-          thread.id = incrementedID
-          Thread
-            .create(thread)
-            .then((thread) => {
-              // add the thread to the user's threads array
-              User.findById(thread.author).then((user) => {
-                user.threads.push(thread._id)
-                user.save()
-              })
-              console.log('Created a new thread with title ' + thread.title)
-              res.redirect('/')
-            })
-        }
+        res.redirect('/')
       })
   },
 
@@ -178,7 +161,7 @@ module.exports = {
 
     // validate the thread
     Thread
-      .findOne({ id: threadId })
+      .findOne({ threadId: threadId })
       .then((thread) => {
         if (!thread) {
           req.session.nonFatalError = `No thread with ID ${threadId} exists!`
@@ -190,33 +173,23 @@ module.exports = {
         answer.author = req.user._id  // attach the user to the article
         answer.creationDate = new Date()
         Answer
-          .findOne()
-          .sort('-id')  // get the latest ID
-          .then((newestAnswer) => {
-            let incrementedID = 1
+          .create(answer)  // save the answer to the db
+          .then((answer) => {
+            console.log(thread.answers)
+            thread.answers.push(answer._id)  // save it to the thread's answers too
+            console.log(thread.answers)
+            thread.save()
+            User
+              .findById(answer.author)
+              .then((user) => {
+                if (!user) {
+                  console.log('No user when trying to add a answer, this shouldnt be happening! :O')
+                  throw Error
+                }
 
-            if (newestAnswer) incrementedID = parseInt(newestAnswer.id) + 1
-
-            answer.id = incrementedID
-            Answer
-              .create(answer)  // save the answer to the db
-              .then((answer) => {
-                console.log(thread.answers)
-                thread.answers.push(answer._id)  // save it to the thread's answers too
-                console.log(thread.answers)
-                thread.save()
-                User
-                  .findById(answer.author)
-                  .then((user) => {
-                    if (!user) {
-                      console.log('No user when trying to add a answer, this shouldnt be happening! :O')
-                      throw Error
-                    }
-
-                    user.answers.push(answer._id)  // save the answer to the user's answers too
-                    user.save()
-                    res.redirect('/post/' + threadId + '/' + req.params.title)
-                  })
+                user.answers.push(answer._id)  // save the answer to the user's answers too
+                user.save()
+                res.redirect('/post/' + threadId + '/' + req.params.title)
               })
           })
       })
@@ -226,7 +199,7 @@ module.exports = {
     let answerId = req.params.id
 
     Answer
-      .findOne({ id: answerId })
+      .findOne({ answerId: answerId })
       .populate(['thread', 'author'])
       .then((answer) => {
         if (!answer) {
@@ -250,7 +223,7 @@ module.exports = {
     let threadId = req.params.id
 
     Thread
-      .findOne({ id: threadId })
+      .findOne({ threadId: threadId })
       .then((thread) => {
         if (!thread) {
           // ERROR

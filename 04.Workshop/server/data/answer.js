@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const autoIncrement = require('mongoose-sequence')
 
 let answerSchema = mongoose.Schema({
   thread: {
@@ -21,12 +22,6 @@ let answerSchema = mongoose.Schema({
   content: {
     type: String,
     required: true
-  },
-
-  id: {
-    type: Number,
-    required: true,
-    unique: true
   }
 })
 
@@ -34,7 +29,6 @@ function removeAnswerFromThread (answer, next) {
   // this function removes the answer from the thread's answers list, returning a Promise
   const Thread = mongoose.model('Thread')
   return new Promise(function (resolve, reject) {
-    console.log(answer.thread)
     Thread.findById(answer.thread)
       .then((thread) => {
         if (!thread) {
@@ -77,4 +71,5 @@ answerSchema.pre('remove', true, function (next, done, req) {
   })
 })
 
+answerSchema.plugin(autoIncrement, {inc_field: 'answerId'})
 mongoose.model('Answer', answerSchema)
