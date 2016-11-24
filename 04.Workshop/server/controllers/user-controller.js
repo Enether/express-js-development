@@ -32,10 +32,20 @@ function passwordIsValid (username) {
 
 module.exports = {
   showRegister: (req, res) => {
+    if (req.user) {
+      // ERROR - user must not be logged in
+      res.redirect('/')
+      return
+    }
     res.render('user/register', { userArgs: {} })
   },
 
   showLogin: (req, res) => {
+    if (req.user) {
+      // User must not be logged in
+      res.redirect('/')
+      return
+    }
     res.render('user/login', { userArgs: {} })
   },
 
@@ -56,6 +66,11 @@ module.exports = {
   },
 
   register: (req, res) => {
+    if (req.user) {
+      // User must not be logged in
+      res.redirect('/')
+      return
+    }
     let user = req.body
     if (validateUsernameAndPassword(res, user, 'user/register')) {
       // VALIDATE!
@@ -95,6 +110,11 @@ module.exports = {
   },
 
   login: (req, res) => {
+    if (req.user) {
+      // User must not be logged in
+      res.redirect('/')
+      return
+    }
     let loginUser = req.body
 
     if (validateUsernameAndPassword(res, loginUser, 'user/login')) {  // checks if the given username and password are valid in of themselves and handles if they are not
