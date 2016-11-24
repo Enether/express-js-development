@@ -29,7 +29,7 @@ module.exports = (app) => {
   app.get('/post/:id/:title', controllers.thread.showThread)
   // edit thread page
   app.get('/post/:id/:title/edit', auth.isAuthenticated, controllers.thread.showEditPage)
-  app.post('/thread/:id/edit', controllers.thread.editThread)
+  app.post('/thread/:id/edit', auth.isAuthenticated, controllers.thread.editThread)
   // delete thread request
   app.post('/post/:id/:title', auth.isAuthenticated, controllers.thread.deleteThread)
 
