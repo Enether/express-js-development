@@ -11,7 +11,7 @@ block main-content
     p.author(style="float:right;")= thread.author.username
     br
     if currentUser && currentUser.isAdmin()
-      - let threadRoute = '/post/' + thread.threadId + '/' + thread.title
+      - let threadRoute = '/thread/' + thread.threadId + '/' + thread.title
       form(method="post", action=threadRoute)
         button.btn-danger(type="submit") Delete
       - let updateRoute = threadRoute + '/edit'

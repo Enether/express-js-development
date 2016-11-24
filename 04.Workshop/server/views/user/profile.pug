@@ -5,7 +5,7 @@ block main-content
 
   h2 Threads
   for thread in threads
-    - let threadLink = '/post/' + thread.id + '/' + thread.title
+    - let threadLink = '/thread/' + thread.id + '/' + thread.title
         a(href=threadLink class="label label-info" style="font-size: 25px;")= thread.title
 
   h2 Answers

@@ -26,12 +26,12 @@ module.exports = (app) => {
 
 
   // show thread page
-  app.get('/post/:id/:title', controllers.thread.showThread)
+  app.get('/thread/:id/:title', controllers.thread.showThread)
   // edit thread page
-  app.get('/post/:id/:title/edit', auth.isAuthenticated, controllers.thread.showEditPage)
+  app.get('/thread/:id/:title/edit', auth.isAuthenticated, controllers.thread.showEditPage)
   app.post('/thread/:id/edit', auth.isAuthenticated, controllers.thread.editThread)
   // delete thread request
-  app.post('/post/:id/:title', auth.isAuthenticated, controllers.thread.deleteThread)
+  app.post('/thread/:id/:title', auth.isAuthenticated, controllers.thread.deleteThread)
 
   // delete answer action
   app.post('/answer/:id/delete', auth.isAuthenticated, controllers.thread.deleteAnswer)

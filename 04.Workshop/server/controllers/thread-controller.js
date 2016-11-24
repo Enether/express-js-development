@@ -64,7 +64,7 @@ module.exports = {
         } else if (!req.user.isAdmin()) {
           // unauthorized access
           req.session.nonFatalError = 'You do not have permission for that action!'
-          res.redirect(`/post/${thread.threadId}/${thread.title}`)
+          res.redirect(`/thread/${thread.threadId}/${thread.title}`)
           return
         }
 
@@ -133,7 +133,7 @@ module.exports = {
         thread.content = req.body.content
 
         thread.save().then(() => {
-          res.redirect(`/post/${thread.threadId}/${thread.title}`)
+          res.redirect(`/thread/${thread.threadId}/${thread.title}`)
         })
       })
   },
@@ -189,7 +189,7 @@ module.exports = {
 
                 user.answers.push(answer._id)  // save the answer to the user's answers too
                 user.save()
-                res.redirect('/post/' + threadId + '/' + req.params.title)
+                res.redirect('/thread/' + threadId + '/' + req.params.title)
               })
           })
       })
